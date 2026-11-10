@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { SiteHeader } from "@/components/SiteHeader";
 import "./globals.css";
+import "./editorial.css";
 
 // 모든 페이지에 한국어 설정, 공통 헤더와 메타데이터를 적용합니다.
 export const metadata: Metadata = {

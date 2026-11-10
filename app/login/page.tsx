@@ -29,7 +29,12 @@ export default async function LoginPage({ searchParams }: Props) {
       >
         {notice === "save" ? (
           <p className="notice info-notice">
-            계산은 누구나 할 수 있어요. 결과를 저장하려면 로그인해주세요.
+            계산과 기록을 이용하려면 로그인해주세요.
+          </p>
+        ) : null}
+        {notice === "registered-record-retry" ? (
+          <p className="notice warning-notice" role="status">
+            회원가입은 완료됐지만 첫 계산 기록을 저장하지 못했습니다. 로그인 후 계산 기록에서 다시 저장해주세요.
           </p>
         ) : null}
         {notice === "registered" ? (
@@ -39,11 +44,7 @@ export default async function LoginPage({ searchParams }: Props) {
         ) : null}
         {!configured || error === "config" ? (
           <p className="notice warning-notice" role="status">
-            로그인 연결을 준비하고 있습니다. 지금은{" "}
-            <Link className="text-link" href="/">
-              계산기
-            </Link>
-            를 이용할 수 있어요.
+            로그인 연결을 준비하고 있습니다. 연결이 완료되면 로그인할 수 있어요.
           </p>
         ) : null}
         {error && error !== "config" ? (

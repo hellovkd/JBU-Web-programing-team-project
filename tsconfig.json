@@ -30,6 +30,8 @@
     ".claude",
     ".aider-desk",
     ".taste-skill",
+    // 로컬 스킬과 디자인 시안은 서비스 코드의 타입 검사 대상이 아닙니다.
+    "local-ai",
     "test-results"
   ]
 }

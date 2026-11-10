@@ -26,12 +26,12 @@ export async function saveMacroRecordAction(formData: FormData) {
   try {
     user = await getCurrentUser();
   } catch {
-    redirect("/?error=save");
+    redirect("/dashboard?error=save");
   }
-  if (!user) redirect("/login?notice=auth&next=/");
+  if (!user) redirect("/login?notice=auth&next=/dashboard");
   const input = readMacroInput(formData);
-  if (Object.keys(validateMacroInput(input)).length) redirect("/?error=input");
-  if (!calculateMacros(input).isFeasible) redirect("/?error=infeasible");
+  if (Object.keys(validateMacroInput(input)).length) redirect("/dashboard?error=input");
+  if (!calculateMacros(input).isFeasible) redirect("/dashboard?error=infeasible");
   try {
     await createMacroRecord(user.id, input);
   } catch (error) {
@@ -39,13 +39,13 @@ export async function saveMacroRecordAction(formData: FormData) {
       "기록 저장 실패:",
       error instanceof Error ? error.name : "UnknownError",
     );
-    redirect("/?error=save");
+    redirect("/dashboard?error=save");
   }
   // 수정된 입력과 재계산 결과가 홈, 계산 기록, 식단 기록의 목표치에 즉시 반영되도록 재검증합니다.
   revalidatePath("/");
   revalidatePath("/dashboard");
   revalidatePath("/meals");
-  redirect("/?notice=updated");
+  redirect("/dashboard?notice=updated");
 }
 
 export async function registerAction(formData: FormData) {
@@ -65,10 +65,10 @@ export async function registerAction(formData: FormData) {
   // 회원가입 시점에만 최초 탄단지 계산을 수행하므로 배분 가능한 조건인지 함께 검증합니다.
   if (!calculateMacros(bodySpec).isFeasible)
     redirect("/register?error=infeasible");
+  let user;
   try {
-    // 계정을 DB에 생성하고 가입 시 입력한 신체 정보로 첫 탄단지 계산 기록을 함께 저장합니다.
-    const user = await createUser({ name, email, password, bodySpec });
-    await createMacroRecord(user.id, bodySpec);
+    // 계정 생성과 첫 기록 저장의 실패를 구분해 생성된 계정을 다시 가입하라고 안내하지 않습니다.
+    user = await createUser({ name, email, password, bodySpec });
   } catch (error) {
     const duplicate =
       error instanceof Error &&
@@ -76,10 +76,17 @@ export async function registerAction(formData: FormData) {
         ("code" in error && error.code === 11000));
     redirect(`/register?error=${duplicate ? "duplicate" : "database"}`);
   }
+  let initialRecordSaved = true;
   try {
-    await signIn("credentials", { email, password, redirectTo: "/" });
+    await createMacroRecord(user.id, bodySpec);
   } catch (error) {
-    if (error instanceof AuthError) redirect("/login?notice=registered");
+    initialRecordSaved = false;
+    console.error("초기 계산 기록 저장 실패:", error instanceof Error ? error.name : "UnknownError");
+  }
+  try {
+    await signIn("credentials", { email, password, redirectTo: initialRecordSaved ? "/dashboard" : "/dashboard?notice=record-retry" });
+  } catch (error) {
+    if (error instanceof AuthError) redirect(initialRecordSaved ? "/login?notice=registered" : "/login?notice=registered-record-retry");
     throw error;
   }
 }

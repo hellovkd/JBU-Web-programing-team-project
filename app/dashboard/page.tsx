@@ -34,6 +34,12 @@ export default async function DashboardPage({ searchParams }: Props) {
           신체 정보와 목표를 수정해 다시 계산했습니다.
         </p>
       ) : null}
+      {/* 계정은 생성됐지만 최초 계산 기록 저장이 실패한 경우 재저장을 안내합니다. */}
+      {notice === "record-retry" ? (
+        <p className="notice warning-notice" role="status">
+          회원가입은 완료됐지만 첫 계산 기록을 저장하지 못했습니다. 아래 정보를 확인하고 다시 저장해주세요.
+        </p>
+      ) : null}
       {error ? (
         <p className="notice error-notice" role="alert">
           {error === "save"
@@ -81,6 +87,7 @@ export default async function DashboardPage({ searchParams }: Props) {
           <span>최근 100개 중 {records.length}개</span>
         </div>
         {records.length ? (
+          <div className="record-table-scroll" tabIndex={0} role="region" aria-label="저장한 계산 기록 표">
           <table className="record-table">
             <thead>
               <tr>
@@ -121,6 +128,7 @@ export default async function DashboardPage({ searchParams }: Props) {
               ))}
             </tbody>
           </table>
+          </div>
         ) : (
           <div className="empty-state surface-panel">
             <p>저장한 계산 기록이 없습니다.</p>

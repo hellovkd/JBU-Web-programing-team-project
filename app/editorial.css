@@ -1,0 +1,104 @@
+/* 기존 계산·저장 기능을 건드리지 않고 화면 전체의 시각 체계를 정리합니다. */
+:root {
+  --ground: #fafafa;
+  --surface: #ffffff;
+  --raised: #ededed;
+  --ink: #171717;
+  --muted: #626262;
+  --line: #dedede;
+  --control: #bcbcbc;
+  --primary: #171717;
+}
+body { min-width: 0; font-size: 14px; line-height: 1.6; }
+.site-header { background: var(--ground); }
+.header-inner { max-width: 1200px; min-height: 76px; }
+.brand { display: inline-flex; align-items: center; gap: 10px; flex-shrink: 0; font-size: 18px; font-weight: 700; letter-spacing: -.06em; }
+.brand:hover { text-decoration: none; }
+.brand-symbol { display: grid; place-items: center; width: 32px; height: 32px; background: var(--ink); color: #fff; font-size: 13px; letter-spacing: 0; }
+.header-navigation { gap: 26px; font-size: 13px; }
+.header-navigation > a:not(.secondary-button):hover { text-decoration: underline; }
+.app-content { padding: 0 24px; }
+.content-shell { max-width: 1200px; padding: 56px 0 72px; }
+.page-heading { padding-bottom: 24px; margin-bottom: 32px; border-bottom: 1px solid var(--ink); }
+.page-heading h1 { font-size: clamp(27px, 3vw, 36px); line-height: 1.25; letter-spacing: -.065em; }
+.page-heading p { max-width: 65ch; margin-top: 12px; line-height: 1.7; }
+.page-context, .section-heading > span, .panel-header p, .field-hint, .form-note, .rounding-note, .meal-record-note, .food-save-note { letter-spacing: -.02em; }
+.calculator-grid, .register-grid, .detail-grid, .meal-workspace, .food-workspace { gap: 48px; }
+.results-panel, .registration-body, .detail-grid > .results-panel, .meal-records, .food-list-section { padding-left: 40px; }
+.panel-header, .section-heading { margin-bottom: 22px; }
+.panel-header h2, .section-heading h2, .section-heading h3 { font-size: 16px; font-weight: 700; letter-spacing: -.04em; }
+input, select { min-height: 44px; border-radius: 2px; background-color: var(--surface); }
+input[type="radio"] { min-height: 0; }
+.input-with-unit { border-radius: 2px; background: var(--surface); }
+.input-with-unit input { min-height: 42px; }
+.primary-button, .secondary-button { min-height: 42px; padding: 9px 16px; border-radius: 2px; font-size: 13px; font-weight: 600; }
+.primary-button { border-color: var(--ink); }
+.secondary-button { border-color: #c8c8c8; }
+.auth-shell { max-width: 460px; }
+.auth-panel { padding-top: 4px; }
+.calorie-answer { margin: 30px 0; }
+.calorie-answer strong { font-size: 42px; line-height: 1.1; letter-spacing: -.055em; }
+.energy-metrics { padding: 20px 0; }
+.macro-track, .intake-track { background: #e6e6e6; }
+.macro-track > span, .intake-track > span { background: #333; }
+.dashboard-summary { margin-top: 32px; padding: 24px 0; }
+.dashboard-summary dd { font-size: 28px; letter-spacing: -.04em; }
+.intake-panel { padding: 24px 0; margin-bottom: 38px; border-top-color: var(--ink); }
+.intake-consumed strong { font-size: 30px; letter-spacing: -.04em; }
+.meal-group { padding: 20px 0; }
+.meal-record-list > li + li { margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--line); }
+.food-card { padding: 20px 0; }
+.record-table-scroll { max-width: 100%; overflow-x: auto; }
+.record-table { min-width: 760px; }
+.record-table th, .record-table td { padding-top: 15px; padding-bottom: 15px; }
+
+/* 첫 화면은 실제 가입·기록 흐름을 차례로 읽도록 비대칭 구성으로 표현합니다. */
+.home-shell { padding-top: 0; }
+.home-intro { min-height: 450px; display: grid; grid-template-columns: minmax(0, 1fr) 260px; align-items: end; gap: 40px; padding: 88px 0 62px; border-bottom: 1px solid var(--ink); }
+.home-kicker { margin: 0 0 25px; color: var(--muted); font: 12px/1.5 ui-monospace, Consolas, "Malgun Gothic", monospace; letter-spacing: -.02em; }
+.home-intro h1 { margin: 0; font-size: clamp(40px, 5vw, 64px); font-weight: 700; line-height: 1.18; letter-spacing: -.075em; }
+.home-description { max-width: 440px; color: var(--muted); margin: 25px 0 0; font-size: 15px; line-height: 1.8; word-break: keep-all; }
+.home-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 25px; margin-top: 34px; }
+.home-actions .primary-button { min-width: 118px; }
+.home-login { color: var(--muted); font-size: 13px; text-decoration: underline; text-underline-offset: 4px; }
+.home-aside { padding: 20px 0 0; border-top: 1px solid var(--ink); }
+.home-aside p { margin: 0 0 30px; font-size: 15px; font-weight: 600; line-height: 1.7; letter-spacing: -.04em; }
+.home-aside span { color: var(--muted); font: 10px/1.6 ui-monospace, Consolas, monospace; }
+.home-guide { display: grid; grid-template-columns: minmax(200px, .8fr) minmax(0, 1.4fr); gap: 50px; padding: 46px 0 48px; }
+.home-guide-title .home-kicker { margin-bottom: 12px; }
+.home-guide-title h2 { margin: 0; font-size: 21px; letter-spacing: -.06em; }
+.home-guide-list > div { display: grid; grid-template-columns: 36px minmax(110px, .6fr) minmax(0, 1fr); gap: 16px; padding: 18px 0; border-bottom: 1px solid var(--line); }
+.home-guide-list > div:first-child { padding-top: 0; }
+.home-guide-list span { color: #777; font: 12px/1.6 ui-monospace, Consolas, monospace; }
+.home-guide-list h3 { margin: 0; font-size: 14px; line-height: 1.6; }
+.home-guide-list p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.7; word-break: keep-all; }
+.home-footnote { border-top: 1px solid var(--line); margin: 0; padding-top: 20px; color: var(--muted); font-size: 12px; }
+
+/* 작은 화면에서는 입력과 결과를 세로로 배치하고 표만 가로 스크롤합니다. */
+@media (max-width: 760px) {
+  .header-inner { width: calc(100% - 32px); min-height: 0; padding: 17px 0; flex-wrap: wrap; gap: 16px; }
+  .header-navigation { width: 100%; gap: 18px; overflow-x: auto; padding-bottom: 3px; }
+  .header-navigation > * { flex-shrink: 0; }
+  .app-content { padding: 0 16px; }
+  .content-shell { padding: 36px 0 56px; }
+  .calculator-grid, .register-grid, .detail-grid, .meal-workspace, .food-workspace { grid-template-columns: minmax(0, 1fr); gap: 36px; }
+  .results-panel, .registration-body, .detail-grid > .results-panel, .meal-records, .food-list-section { border-left: 0; border-top: 1px solid var(--line); padding: 26px 0 0; }
+  .home-shell { padding-top: 0; }
+  .home-intro { min-height: 0; grid-template-columns: 1fr; gap: 44px; padding: 60px 0 42px; }
+  .home-aside { max-width: 280px; }
+  .home-guide { grid-template-columns: 1fr; gap: 30px; padding: 36px 0; }
+  .intake-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+  .meal-date-filter { flex-wrap: wrap; }
+  .meal-date-filter input { width: 150px; }
+}
+@media (max-width: 480px) {
+  .home-intro h1 { font-size: 39px; }
+  .home-guide-list > div { grid-template-columns: 28px 1fr; gap: 8px; }
+  .home-guide-list p { grid-column: 2; }
+  .body-number-grid { grid-template-columns: 1fr; }
+  .dashboard-summary { grid-template-columns: 1fr; gap: 16px; }
+  .dashboard-summary > div + div { padding-top: 16px; border-top: 1px solid var(--line); }
+  .meal-record-nutrients { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .heading-with-action { align-items: flex-start; flex-wrap: wrap; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; } }
