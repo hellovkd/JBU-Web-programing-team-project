@@ -6,14 +6,16 @@ import { useFormStatus } from "react-dom";
 export function SubmitButton({
   label,
   disabled = false,
+  variant = "primary",
 }: {
   label: string;
   disabled?: boolean;
+  variant?: "primary" | "secondary";
 }) {
   const { pending } = useFormStatus();
   return (
     <button
-      className="primary-button"
+      className={variant === "secondary" ? "secondary-button" : "primary-button"}
       type="submit"
       disabled={pending || disabled}
     >

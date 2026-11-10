@@ -46,6 +46,13 @@ export function getTodayDate(now = new Date()) {
   return `${part("year")}-${part("month")}-${part("day")}`;
 }
 
+// 확정된 한국 날짜에서 하루를 빼므로 서버 시간대와 렌더 중 시각 변화의 영향을 받지 않습니다.
+export function getPreviousMealDate(date: string) {
+  if (!isValidMealDate(date)) throw new Error("이전 날짜를 계산할 기준일이 올바르지 않습니다.");
+  const previous = new Date(new Date(`${date}T00:00:00.000Z`).getTime() - 24 * 60 * 60 * 1000);
+  return previous.toISOString().slice(0, 10);
+}
+
 export function readFoodInput(data: Pick<FormData, "get">): FoodInput {
   const text = (name: string) => {
     const value = data.get(name);

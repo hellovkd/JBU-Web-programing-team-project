@@ -48,6 +48,40 @@ input[type="radio"] { min-height: 0; }
 .meal-group { padding: 20px 0; }
 .meal-record-list > li + li { margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--line); }
 .food-card { padding: 20px 0; }
+/* 검색은 기존 입력과 같은 중립색·구분선 체계를 사용하고 결과 개수만큼만 렌더링합니다. */
+.food-search { border-bottom: 1px solid var(--line); padding-bottom: 24px; margin-bottom: 24px; }
+.food-search h3 { margin: 0; font-size: 14px; font-weight: 600; }
+.food-search-form { display: flex; align-items: flex-end; gap: 10px; margin-top: 18px; }
+.food-search-form .field-group { flex: 1; }
+.food-search-feedback { min-height: 28px; margin-top: 8px; }
+.food-search-results { list-style: none; padding: 0; margin: 12px 0 0; }
+.food-search-results > li { display: flex; align-items: center; justify-content: space-between; gap: 14px; border-top: 1px solid var(--line); padding: 14px 0; }
+.food-search-results > li > div { min-width: 0; overflow-wrap: anywhere; }
+.food-search-results strong { font-size: 13px; }
+.food-search-results small { display: block; color: var(--muted); font-size: 12px; margin-top: 4px; }
+.food-search-results p { font-size: 12px; color: var(--muted); margin: 5px 0 0; }
+.food-search-results button { flex-shrink: 0; padding: 8px 10px; }
+.food-search-pagination { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 16px; }
+.food-search-pagination span { color: var(--muted); font: 12px ui-monospace, Consolas, monospace; }
+.food-search-source { display: inline-block; color: var(--muted); font-size: 11px; margin-top: 16px; }
+/* 세트는 목록으로 표시하고, 저장·적용 폼을 구분해 날짜와 대상 끼니를 명확히 합니다. */
+.meal-set-day-action { margin: 0 0 28px; }
+.meal-set-save { margin-top: 18px; }
+.meal-set-save > summary { width: fit-content; cursor: pointer; font-size: 13px; text-decoration: underline; text-underline-offset: 4px; }
+.meal-set-save-form { display: flex; align-items: flex-end; flex-wrap: wrap; gap: 12px; margin-top: 14px; }
+.meal-set-save-form .field-group { flex: 1; min-width: 180px; }
+.saved-meal-sets { margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--ink); }
+.meal-set-list, .meal-set-items { list-style: none; padding: 0; margin: 0; }
+.meal-set-list > li { border-bottom: 1px solid var(--line); padding: 22px 0; }
+.meal-set-list summary { cursor: pointer; overflow-wrap: anywhere; }
+.meal-set-list summary span { margin-left: 12px; font-size: 12px; color: var(--muted); }
+.meal-set-items { max-width: 680px; margin-top: 16px; }
+.meal-set-items > li { display: flex; justify-content: space-between; gap: 16px; padding: 7px 0; font-size: 13px; }
+.meal-set-items > li > span:first-child { overflow-wrap: anywhere; }
+.meal-set-items > li > span:last-child { flex-shrink: 0; color: var(--muted); }
+.meal-set-actions { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-top: 18px; }
+.meal-set-apply-form { display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
+.meal-set-apply-form select { min-width: 130px; }
 .record-table-scroll { max-width: 100%; overflow-x: auto; }
 .record-table { min-width: 760px; }
 .record-table th, .record-table td { padding-top: 15px; padding-bottom: 15px; }

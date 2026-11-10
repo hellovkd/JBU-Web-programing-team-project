@@ -1,10 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { FoodFields } from "@/components/FoodFields";
-import { SubmitButton } from "@/components/SubmitButton";
+import { FoodRegistration } from "@/components/FoodRegistration";
 import { getCurrentUser } from "@/lib/session";
 import { getFavoriteFoods } from "@/lib/favoriteFoods";
-import { createFavoriteFoodAction } from "@/lib/mealActions";
 import { foodUnits } from "@/lib/mealNutrition";
 
 type Props = { searchParams: Promise<{ error?: string; notice?: string }> };
@@ -30,7 +28,8 @@ export default async function FoodsPage({ searchParams }: Props) {
       <div className="food-workspace">
         <section className="surface-panel food-form-panel" aria-labelledby="food-form-heading">
           <div className="panel-header"><h2 id="food-form-heading">음식 등록</h2></div>
-          <form action={createFavoriteFoodAction} className="food-form"><FoodFields /><SubmitButton label="음식 저장" /></form>
+          {/* 설정값 자체는 클라이언트로 보내지 않고 검색 가능 여부만 전달합니다. */}
+          <FoodRegistration searchAvailable={Boolean(process.env.FOOD_NUTRITION_API_KEY?.trim())} />
           <p className="food-save-note">음식 저장 후 식단 기록에 먹은 양을 입력해야 섭취량에 반영됩니다.</p>
         </section>
         <section className="food-list-section" aria-labelledby="food-list-heading">
