@@ -1,3 +1,5 @@
+import { CarbsIcon, FatIcon, FlameIcon, ProteinIcon } from "@/components/Icons";
+import { NumberTicker } from "@/components/MagicPrimitives";
 import {
   macroShares,
   type MacroResult as Result,
@@ -5,6 +7,12 @@ import {
   goals,
   activityLevels,
 } from "@/lib/macroCalculator";
+
+const MACRO_ICONS = {
+  carbs: CarbsIcon,
+  protein: ProteinIcon,
+  fat: FatIcon,
+} as const;
 
 // 계산기와 기록 상세에서 필수 수치·경고·열량 비율만 같은 형식으로 표시합니다.
 export function MacroResult({
@@ -47,9 +55,14 @@ export function MacroResult({
         </div>
       </div>
       <div className="calorie-answer">
-        <span>목표 칼로리</span>
+        <span className="calorie-answer-label">
+          <FlameIcon size={15} />
+          <span>목표 칼로리</span>
+        </span>
         <div>
-          <strong>{result.targetCalories.toLocaleString("ko-KR")}</strong>
+          <strong>
+            <NumberTicker value={result.targetCalories} />
+          </strong>
           <span>kcal</span>
         </div>
       </div>
@@ -84,26 +97,32 @@ export function MacroResult({
           <div className="section-heading">
             <h3>탄단지 섭취량</h3>
           </div>
-          {macros.map((macro) => (
-            <div className={`macro-row ${macro.key}`} key={macro.key}>
-              <div className="macro-row-label">
-                <span>{macro.name}</span>
-                <span className="macro-amount">
-                  <strong>{macro.grams}</strong> g <small>{macro.share}%</small>
-                </span>
+          {macros.map((macro) => {
+            const MacroIcon = MACRO_ICONS[macro.key as keyof typeof MACRO_ICONS];
+            return (
+              <div className={`macro-row ${macro.key}`} key={macro.key}>
+                <div className="macro-row-label">
+                  <span className="macro-row-title">
+                    <MacroIcon size={15} />
+                    <span>{macro.name}</span>
+                  </span>
+                  <span className="macro-amount">
+                    <strong>{macro.grams}</strong> g <small>{macro.share}%</small>
+                  </span>
+                </div>
+                <div
+                  className="macro-track"
+                  role="progressbar"
+                  aria-label={`${macro.name} 열량 비율`}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-valuenow={macro.share}
+                >
+                  <span style={{ width: `${macro.share}%` }} />
+                </div>
               </div>
-              <div
-                className="macro-track"
-                role="progressbar"
-                aria-label={`${macro.name} 열량 비율`}
-                aria-valuemin={0}
-                aria-valuemax={100}
-                aria-valuenow={macro.share}
-              >
-                <span style={{ width: `${macro.share}%` }} />
-              </div>
-            </div>
-          ))}
+            );
+          })}
           <p className="rounding-note">
             모든 소수점 섭취량은 반올림한 기준입니다.
           </p>

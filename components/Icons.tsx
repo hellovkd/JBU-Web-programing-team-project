@@ -1,183 +1,103 @@
-import type { SVGProps } from "react";
+import {
+  ArrowUpRight,
+  Beef,
+  Calendar,
+  ChartColumnIncreasing,
+  ChevronLeft,
+  ChevronRight,
+  CircleCheck,
+  Droplet,
+  ExternalLink,
+  Flame,
+  LayoutDashboard,
+  LogOut,
+  MessageCircle,
+  Plus,
+  RefreshCw,
+  Salad,
+  Scale,
+  Search,
+  SlidersHorizontal,
+  Sparkles,
+  Tag,
+  Target,
+  TriangleAlert,
+  UtensilsCrossed,
+  Wheat,
+  X,
+  type LucideIcon,
+  type LucideProps,
+} from "lucide-react";
 
-type IconProps = SVGProps<SVGSVGElement> & {
-  size?: number;
-};
-
-function SvgIcon({
-  size = 16,
-  children,
-  ...props
-}: IconProps) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.75}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      {...props}
-    >
-      {children}
-    </svg>
-  );
+function createLucideIcon(Icon: LucideIcon) {
+  return function WrappedIcon({
+    size = 16,
+    strokeWidth = 1.8,
+    "aria-hidden": ariaHidden = true,
+    ...props
+  }: LucideProps) {
+    return (
+      <Icon
+        size={size}
+        strokeWidth={strokeWidth}
+        aria-hidden={ariaHidden}
+        {...props}
+      />
+    );
+  };
 }
 
 /** 돋보기 아이콘 */
-export function SearchIcon(props: IconProps) {
-  return (
-    <SvgIcon {...props}>
-      <circle cx="11" cy="11" r="7" />
-      <path d="m20 20-3.5-3.5" />
-    </SvgIcon>
-  );
-}
-
+export const SearchIcon = createLucideIcon(Search);
 /** 브랜드 태그 아이콘 */
-export function TagIcon(props: IconProps) {
-  return (
-    <SvgIcon {...props}>
-      <path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z" />
-      <circle cx="7.5" cy="7.5" r=".75" fill="currentColor" />
-    </SvgIcon>
-  );
-}
-
+export const TagIcon = createLucideIcon(Tag);
 /** 영양 맞춤 추천 아이콘 */
-export function SparklesIcon(props: IconProps) {
-  return (
-    <SvgIcon {...props}>
-      <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" />
-    </SvgIcon>
-  );
-}
-
-/** 막대 차트 아이콘 */
-export function ChartBarIcon(props: IconProps) {
-  return (
-    <SvgIcon {...props}>
-      <path d="M3 3v18h18" />
-      <path d="M7 16v-4" />
-      <path d="M12 16V8" />
-      <path d="M17 16v-6" />
-    </SvgIcon>
-  );
-}
-
+export const SparklesIcon = createLucideIcon(Sparkles);
+/** 막대·추이 차트 아이콘 */
+export const ChartBarIcon = createLucideIcon(ChartColumnIncreasing);
+/** 식단 통계 내비게이션 아이콘 */
+export const StatsIcon = createLucideIcon(ChartColumnIncreasing);
 /** 달력 아이콘 */
-export function CalendarIcon(props: IconProps) {
-  return (
-    <SvgIcon {...props}>
-      <rect width="18" height="18" x="3" y="4" rx="2" />
-      <path d="M16 2v4" />
-      <path d="M8 2v4" />
-      <path d="M3 10h18" />
-    </SvgIcon>
-  );
-}
-
+export const CalendarIcon = createLucideIcon(Calendar);
 /** 왼쪽 화살표 아이콘 */
-export function ChevronLeftIcon(props: IconProps) {
-  return (
-    <SvgIcon {...props}>
-      <path d="m15 18-6-6 6-6" />
-    </SvgIcon>
-  );
-}
-
+export const ChevronLeftIcon = createLucideIcon(ChevronLeft);
 /** 오른쪽 화살표 아이콘 */
-export function ChevronRightIcon(props: IconProps) {
-  return (
-    <SvgIcon {...props}>
-      <path d="m9 18 6-6-6-6" />
-    </SvgIcon>
-  );
-}
-
+export const ChevronRightIcon = createLucideIcon(ChevronRight);
 /** 완료 및 적정 상태 아이콘 */
-export function CheckCircleIcon(props: IconProps) {
-  return (
-    <SvgIcon {...props}>
-      <circle cx="12" cy="12" r="9" />
-      <path d="m9 12 2 2 4-4" />
-    </SvgIcon>
-  );
-}
-
+export const CheckCircleIcon = createLucideIcon(CircleCheck);
 /** 부족 및 초과 알림 아이콘 */
-export function AlertTriangleIcon(props: IconProps) {
-  return (
-    <SvgIcon {...props}>
-      <path d="m10.29 3.86-7.4 12.8A2 2 0 0 0 4.62 19.6h14.76a2 2 0 0 0 1.73-2.94l-7.4-12.8a2 2 0 0 0-3.42 0z" />
-      <path d="M12 9v4" />
-      <path d="M12 17h.01" />
-    </SvgIcon>
-  );
-}
-
+export const AlertTriangleIcon = createLucideIcon(TriangleAlert);
 /** 추가 아이콘 */
-export function PlusIcon(props: IconProps) {
-  return (
-    <SvgIcon {...props}>
-      <path d="M12 5v14" />
-      <path d="M5 12h14" />
-    </SvgIcon>
-  );
-}
-
+export const PlusIcon = createLucideIcon(Plus);
 /** 닫기·초기화 아이콘 */
-export function XIcon(props: IconProps) {
-  return (
-    <SvgIcon {...props}>
-      <path d="M18 6 6 18" />
-      <path d="m6 6 12 12" />
-    </SvgIcon>
-  );
-}
-
+export const XIcon = createLucideIcon(X);
 /** 새 창 열기 아이콘 */
-export function ExternalLinkIcon(props: IconProps) {
-  return (
-    <SvgIcon {...props}>
-      <path d="M15 3h6v6" />
-      <path d="M10 14 21 3" />
-      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-    </SvgIcon>
-  );
-}
-
+export const ExternalLinkIcon = createLucideIcon(ExternalLink);
 /** 곰 코치 말풍선 아이콘 */
-export function MessageCircleIcon(props: IconProps) {
-  return (
-    <SvgIcon {...props}>
-      <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
-    </SvgIcon>
-  );
-}
-
+export const MessageCircleIcon = createLucideIcon(MessageCircle);
 /** 다음 팁 전환 아이콘 */
-export function RefreshCwIcon(props: IconProps) {
-  return (
-    <SvgIcon {...props}>
-      <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
-      <path d="M21 3v5h-5" />
-      <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
-      <path d="M8 16H3v5" />
-    </SvgIcon>
-  );
-}
-
+export const RefreshCwIcon = createLucideIcon(RefreshCw);
 /** 목표 아이콘 */
-export function TargetIcon(props: IconProps) {
-  return (
-    <SvgIcon {...props}>
-      <circle cx="12" cy="12" r="9" />
-      <circle cx="12" cy="12" r="5" />
-      <circle cx="12" cy="12" r="1.5" fill="currentColor" />
-    </SvgIcon>
-  );
-}
+export const TargetIcon = createLucideIcon(Target);
+/** 대시보드 아이콘 */
+export const DashboardIcon = createLucideIcon(LayoutDashboard);
+/** 식단 기록 아이콘 */
+export const MealsIcon = createLucideIcon(UtensilsCrossed);
+/** 내 음식 관리 아이콘 */
+export const FoodsIcon = createLucideIcon(Salad);
+/** 칼로리 불꽃 아이콘 */
+export const FlameIcon = createLucideIcon(Flame);
+/** 탄수화물 곡물 아이콘 */
+export const CarbsIcon = createLucideIcon(Wheat);
+/** 단백질 아이콘 */
+export const ProteinIcon = createLucideIcon(Beef);
+/** 지방 아이콘 */
+export const FatIcon = createLucideIcon(Droplet);
+/** 대사량·체중 저울 아이콘 */
+export const ScaleIcon = createLucideIcon(Scale);
+/** 로그아웃 아이콘 */
+export const LogOutIcon = createLucideIcon(LogOut);
+/** 이동 링크 화살표 아이콘 */
+export const ArrowUpRightIcon = createLucideIcon(ArrowUpRight);
+/** 필터·설정 슬라이더 아이콘 */
+export const SlidersIcon = createLucideIcon(SlidersHorizontal);

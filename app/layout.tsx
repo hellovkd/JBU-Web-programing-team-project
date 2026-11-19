@@ -1,7 +1,22 @@
 import type { Metadata } from "next";
+import { Noto_Sans_KR, Outfit } from "next/font/google";
 import { CoachFloatingWidget } from "@/components/CoachBear";
 import { SiteHeader } from "@/components/SiteHeader";
 import "./globals.css";
+
+const outfit = Outfit({
+  subsets: ["latin"],
+  weight: ["500", "600", "700", "800"],
+  display: "swap",
+  variable: "--font-outfit",
+});
+
+const notoSansKr = Noto_Sans_KR({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+  variable: "--font-noto-sans-kr",
+});
 
 // 모든 페이지에 한국어 설정, 공통 헤더와 메타데이터를 적용합니다.
 export const metadata: Metadata = {
@@ -19,7 +34,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ko">
+    <html lang="ko" className={`${outfit.variable} ${notoSansKr.variable}`}>
       <body>
         <a className="skip-link" href="#main">
           본문으로 이동

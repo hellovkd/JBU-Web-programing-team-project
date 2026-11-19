@@ -1,7 +1,12 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { CoachHeroCard } from "@/components/CoachBear";
-import { ChartBarIcon, TargetIcon } from "@/components/Icons";
+import {
+  ArrowUpRightIcon,
+  ChartBarIcon,
+  MealsIcon,
+  ScaleIcon,
+} from "@/components/Icons";
 import { MealSuggestions } from "@/components/MealSuggestions";
 import { getDashboardCoachBriefing } from "@/lib/coachTips";
 import { getFavoriteFoods } from "@/lib/favoriteFoods";
@@ -38,8 +43,8 @@ export default async function DashboardPage() {
   const { condition, target, bmr, tdee } = resolveUserTarget(calculations[0], user.bodySpec);
 
   const goalLabel = condition ? goals[condition.goal].label : undefined;
-  const goalBadge = condition && target
-    ? `${goalLabel} · ${condition.weight}kg · ${format(target.calories)}kcal`
+  const goalBadge = condition
+    ? `체중 ${condition.weight}kg`
     : undefined;
 
   const recorded7 = statsBundle.entries.filter((entry) => entry.nutrients !== null);
@@ -52,6 +57,18 @@ export default async function DashboardPage() {
   );
   const chartCeiling = axisCeiling(Math.max(highestCalories7, target?.calories ?? 0), 1000);
 
+  const calorieSummary = {
+    consumed: Math.round(consumed.calories),
+    target: target?.calories ?? 0,
+    remaining: target ? Math.round(target.calories - consumed.calories) : 0,
+    rate:
+      target && target.calories > 0
+        ? Math.round((consumed.calories / target.calories) * 100)
+        : 0,
+    mealCount: records.length,
+    recordedDays7: recordedCount7,
+  };
+
   const briefing = getDashboardCoachBriefing({
     userName: user.name,
     consumed,
@@ -62,13 +79,13 @@ export default async function DashboardPage() {
   });
 
   // 7일 미니 막대 그래프 좌표 계산
-  const svgW = 460;
-  const svgH = 175;
-  const pad = { top: 20, right: 12, bottom: 38, left: 46 };
+  const svgW = 580;
+  const svgH = 210;
+  const pad = { top: 24, right: 16, bottom: 40, left: 48 };
   const plotW = svgW - pad.left - pad.right;
   const plotH = svgH - pad.top - pad.bottom;
   const slotW = plotW / statsBundle.entries.length;
-  const barW = Math.min(34, slotW * 0.56);
+  const barW = Math.min(38, slotW * 0.48);
   const targetLineY =
     target && target.calories > 0
       ? pad.top + plotH * (1 - target.calories / chartCeiling)
@@ -81,6 +98,7 @@ export default async function DashboardPage() {
         message={briefing.message}
         tag={briefing.tag}
         goalBadge={goalBadge}
+        calorieSummary={calorieSummary}
       />
 
       <MealSuggestions
@@ -99,8 +117,9 @@ export default async function DashboardPage() {
               <ChartBarIcon size={18} />
               <h2 id="dashboard-weekly-heading">최근 7일 칼로리 추이</h2>
             </div>
-            <Link href="/meals/stats?days=7" className="text-link">
-              통계 전체 보기
+            <Link href="/meals/stats?days=7" className="text-link inline-icon-link">
+              <span>통계 전체 보기</span>
+              <ArrowUpRightIcon size={14} />
             </Link>
           </div>
 
@@ -127,6 +146,16 @@ export default async function DashboardPage() {
                 role="img"
                 aria-label="최근 7일 일별 칼로리 섭취량 미니 그래프"
               >
+                <defs>
+                  <linearGradient id="dash-bar-grad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="var(--primary)" stopOpacity="0.88" />
+                    <stop offset="100%" stopColor="var(--primary)" stopOpacity="0.48" />
+                  </linearGradient>
+                  <linearGradient id="dash-bar-today-grad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#174630" />
+                    <stop offset="100%" stopColor="#2c7a51" />
+                  </linearGradient>
+                </defs>
                 {[0, 0.5, 1].map((ratio) => {
                   const y = pad.top + plotH * (1 - ratio);
                   return (
@@ -138,14 +167,24 @@ export default async function DashboardPage() {
                     </g>
                   );
                 })}
-                {targetLineY !== null ? (
-                  <line
-                    x1={pad.left}
-                    y1={targetLineY}
-                    x2={svgW - pad.right}
-                    y2={targetLineY}
-                    className="stats-target-line"
-                  />
+                {target && targetLineY !== null ? (
+                  <g>
+                    <line
+                      x1={pad.left}
+                      y1={targetLineY}
+                      x2={svgW - pad.right}
+                      y2={targetLineY}
+                      className="stats-target-line"
+                    />
+                    <text
+                      x={svgW - pad.right}
+                      y={Math.max(13, targetLineY - 6)}
+                      textAnchor="end"
+                      className="stats-target-label"
+                    >
+                      목표 {format(target.calories)}
+                    </text>
+                  </g>
                 ) : null}
                 {statsBundle.entries.map((entry, idx) => {
                   const cal = entry.nutrients?.calories ?? null;
@@ -206,7 +245,10 @@ export default async function DashboardPage() {
         <div className="dashboard-side-stack">
           <section className="dashboard-card" aria-labelledby="dashboard-meals-heading">
             <div className="dashboard-card-head">
-              <h2 id="dashboard-meals-heading">오늘 끼니별 현황</h2>
+              <div className="dashboard-card-title">
+                <MealsIcon size={18} />
+                <h2 id="dashboard-meals-heading">오늘 끼니별 현황</h2>
+              </div>
               <span className="dashboard-muted-count">음식 {records.length}개</span>
             </div>
             <ul className="dashboard-meal-list" role="list">
@@ -229,11 +271,12 @@ export default async function DashboardPage() {
           <section className="dashboard-card" aria-labelledby="dashboard-goals-heading">
             <div className="dashboard-card-head">
               <div className="dashboard-card-title">
-                <TargetIcon size={18} />
+                <ScaleIcon size={18} />
                 <h2 id="dashboard-goals-heading">내 대사량 · 목표 기준</h2>
               </div>
-              <Link href="/goals" className="text-link">
-                변경·이력
+              <Link href="/goals" className="text-link inline-icon-link">
+                <span>변경·이력</span>
+                <ArrowUpRightIcon size={14} />
               </Link>
             </div>
             {condition && target ? (
@@ -262,8 +305,9 @@ export default async function DashboardPage() {
             )}
             <div className="dashboard-card-foot">
               <span>저장한 내 음식 {favorites.length}개</span>
-              <Link href="/foods" className="text-link">
-                음식 검색·관리
+              <Link href="/foods" className="text-link inline-icon-link">
+                <span>음식 검색·관리</span>
+                <ArrowUpRightIcon size={14} />
               </Link>
             </div>
           </section>

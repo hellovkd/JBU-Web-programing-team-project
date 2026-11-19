@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { auth } from "@/auth";
+import { LogOutIcon } from "@/components/Icons";
 import { NavLinks } from "@/components/NavLinks";
 import { logoutAction } from "@/lib/actions";
 import { authenticationConfigured } from "@/lib/config";
@@ -21,10 +22,14 @@ export async function SiteHeader() {
         <nav className="header-account" aria-label="계정 메뉴">
           {session?.user ? (
             <>
-              <span className="account-name">{session.user.name}님</span>
+              <span className="account-name">
+                <i className="account-dot" aria-hidden="true" />
+                <span>{session.user.name}님</span>
+              </span>
               <form action={logoutAction}>
-                <button className="secondary-button" type="submit">
-                  로그아웃
+                <button className="secondary-button header-logout-btn" type="submit">
+                  <LogOutIcon size={15} />
+                  <span>로그아웃</span>
                 </button>
               </form>
             </>

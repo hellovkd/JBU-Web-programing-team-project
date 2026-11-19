@@ -182,12 +182,13 @@ export function formatNumber(value: number) {
   return koNumberFormat.format(value);
 }
 
-/** 그래프의 최댓값과 목표선을 모두 담을 수 있는 눈금 상한(1·2·5×10^n)을 구합니다. */
+/** 그래프의 최댓값과 목표선을 모두 담을 수 있는 눈금 상한을 구합니다. */
 export function axisCeiling(maximum: number, fallback = 1) {
   if (maximum < 1) return fallback;
   const magnitude = 10 ** Math.floor(Math.log10(maximum));
   const leading = maximum / magnitude;
-  const step = leading <= 1 ? 1 : leading <= 2 ? 2 : leading <= 5 ? 5 : 10;
+  const steps = [1, 1.2, 1.5, 2, 2.5, 3, 3.5, 4, 5, 6, 8, 10];
+  const step = steps.find((candidate) => leading <= candidate) ?? 10;
   return step * magnitude;
 }
 

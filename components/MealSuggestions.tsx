@@ -3,7 +3,17 @@
 import Link from "next/link";
 import { useState } from "react";
 import { CoachBanner } from "@/components/CoachBear";
-import { AlertTriangleIcon, CheckCircleIcon, PlusIcon, SearchIcon, SparklesIcon } from "@/components/Icons";
+import {
+  AlertTriangleIcon,
+  CarbsIcon,
+  CheckCircleIcon,
+  FatIcon,
+  FlameIcon,
+  PlusIcon,
+  ProteinIcon,
+  SearchIcon,
+  SparklesIcon,
+} from "@/components/Icons";
 import { getMealsCoachMessage } from "@/lib/coachTips";
 import type { SavedFavoriteFood } from "@/lib/favoriteFoods";
 import { foodUnits, formatNumber as display, nutrientFields, type Nutrients } from "@/lib/mealNutrition";
@@ -28,6 +38,13 @@ const STATUS_LABEL: Record<NutrientStatus, string> = {
   balanced: "적정",
   over: "초과",
 };
+
+const NUTRIENT_ICONS = {
+  calories: FlameIcon,
+  carbs: CarbsIcon,
+  protein: ProteinIcon,
+  fat: FatIcon,
+} as const;
 
 export function MealSuggestions({
   date,
@@ -112,11 +129,17 @@ export function MealSuggestions({
               isMacro && gap.status === "deficient" && analysis.remaining.calories > 15;
             const isSelected = activeMacro === gap.key;
             const StatusIcon = gap.status === "balanced" ? CheckCircleIcon : AlertTriangleIcon;
+            const NutrientIcon = NUTRIENT_ICONS[gap.key];
 
             const content = (
               <>
                 <div className="nutrient-gap-top">
-                  <span className="nutrient-gap-name">{gap.label}</span>
+                  <span className="nutrient-gap-title">
+                    <span className="nutrient-gap-icon">
+                      <NutrientIcon size={14} />
+                    </span>
+                    <span className="nutrient-gap-name">{gap.label}</span>
+                  </span>
                   <span className={`status-badge status-${gap.status}`}>
                     <StatusIcon size={12} />
                     <span>{STATUS_LABEL[gap.status]}</span>
@@ -177,23 +200,31 @@ export function MealSuggestions({
             );
           })
         ) : (
-          nutrientFields.map(({ key, label, unit }) => (
-            <div key={key} className={`nutrient-gap-card ${key}`}>
-              <div className="nutrient-gap-top">
-                <span className="nutrient-gap-name">{label}</span>
-                <span className="status-badge status-empty">목표 미설정</span>
+          nutrientFields.map(({ key, label, unit }) => {
+            const NutrientIcon = NUTRIENT_ICONS[key];
+            return (
+              <div key={key} className={`nutrient-gap-card ${key}`}>
+                <div className="nutrient-gap-top">
+                  <span className="nutrient-gap-title">
+                    <span className="nutrient-gap-icon">
+                      <NutrientIcon size={14} />
+                    </span>
+                    <span className="nutrient-gap-name">{label}</span>
+                  </span>
+                  <span className="status-badge status-empty">목표 미설정</span>
+                </div>
+                <p className="nutrient-gap-consumed">
+                  <strong>{display(consumed[key])}</strong>
+                  <span>{unit} 섭취</span>
+                </p>
+                <div className="nutrient-gap-figures">
+                  <span>목표 미설정</span>
+                  <span>—</span>
+                </div>
+                <div className="nutrient-gap-track" aria-hidden="true" />
               </div>
-              <p className="nutrient-gap-consumed">
-                <strong>{display(consumed[key])}</strong>
-                <span>{unit} 섭취</span>
-              </p>
-              <div className="nutrient-gap-figures">
-                <span>목표 미설정</span>
-                <span>—</span>
-              </div>
-              <div className="nutrient-gap-track" aria-hidden="true" />
-            </div>
-          ))
+            );
+          })
         )}
       </div>
 

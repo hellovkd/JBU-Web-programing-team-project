@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon } from "@/components/Icons";
+import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon, StatsIcon } from "@/components/Icons";
 import { MealStats } from "@/components/MealStats";
 import { getMacroRecords, resolveUserTarget } from "@/lib/macroRecords";
 import {
@@ -51,7 +51,12 @@ export default async function MealStatsPage({ searchParams }: Props) {
   return (
     <main id="main" className="content-shell">
       <div className="page-heading">
-        <h1>식단 통계</h1>
+        <div className="page-heading-title">
+          <span className="page-heading-icon">
+            <StatsIcon size={20} />
+          </span>
+          <h1>식단 통계</h1>
+        </div>
         <p>1일 · 7일 · 30일 기준으로 날짜별 기록과 영양소 섭취 추이를 한눈에 비교합니다.</p>
       </div>
 

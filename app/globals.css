@@ -1,44 +1,48 @@
 @import "tailwindcss";
 
-/* 단일 디자인 토큰 소스: 보태니컬 웰니스 팔레트와 접근성 대비(4.5:1+)를 모든 화면에서 공유합니다. */
+/* 단일 디자인 토큰 소스: Botanical Athletic Studio 팔레트 및 WCAG AA(4.5:1+) 대비 */
 :root {
-  --ground: #f4f6ef;
+  --ground: #f3f5ee;
   --surface: #ffffff;
-  --raised: #e8efe2;
-  --ink: #192d22;
-  --muted: #495e50;
-  --line: #d2ded0;
-  --control: #7a9080;
-  --primary: #1f4732;
-  --primary-hover: #2b5c42;
-  --sprout: #d6e8b2;
-  --sprout-ink: #1b3826;
+  --raised: #eaf0e5;
+  --well: #f7f9f4;
+  --ink: #13251b;
+  --muted: #465b4d;
+  --line: #d4dfd2;
+  --line-strong: #b9cab8;
+  --control: #748c7b;
+  --primary: #174630;
+  --primary-hover: #215d40;
+  --sprout: #c8e68c;
+  --sprout-ink: #13251b;
   --error-ink: #a32620;
   --warning-ink: #795514;
-  --calories: #1f4732;
-  --calories-tint: #e5efe8;
-  --calories-ink: #193b29;
-  --carbs: #638437;
-  --carbs-tint: #edf4e3;
-  --carbs-ink: #3e571d;
-  --protein: #c06c28;
-  --protein-tint: #fbf0e5;
-  --protein-ink: #8a4712;
-  --fat: #387d75;
-  --fat-tint: #e5f3f1;
-  --fat-ink: #225b55;
-  --status-deficient-bg: #fcf4e4;
-  --status-deficient-border: #e4c98e;
-  --status-deficient-ink: #7d4f0c;
-  --status-balanced-bg: #e7f4ea;
-  --status-balanced-border: #b4d8be;
-  --status-balanced-ink: #1e5b34;
-  --status-over-bg: #fdf1ef;
-  --status-over-border: #e6b9b2;
-  --status-over-ink: #a32620;
-  --shadow-card: 0 2px 14px rgba(25, 45, 34, 0.05);
-  --shadow-float: 0 14px 34px rgba(25, 45, 34, 0.16);
-  --font: "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+
+  --calories: #174630;
+  --calories-tint: #e3eee7;
+  --calories-ink: #153c2a;
+  --carbs: #5f8231;
+  --carbs-tint: #ecf3e1;
+  --carbs-ink: #385018;
+  --protein: #b85d19;
+  --protein-tint: #fcede2;
+  --protein-ink: #823c0b;
+  --fat: #2c7870;
+  --fat-tint: #e2f2f0;
+  --fat-ink: #1b544e;
+
+  --status-deficient-bg: #fcf3df;
+  --status-deficient-border: #e2c588;
+  --status-deficient-ink: #754909;
+  --status-balanced-bg: #e5f3e8;
+  --status-balanced-border: #afd5ba;
+  --status-balanced-ink: #17542e;
+  --status-over-bg: #fdefed;
+  --status-over-border: #e5b7af;
+  --status-over-ink: #9e221c;
+
+  --shadow-float: 0 16px 36px rgba(19, 37, 27, 0.16);
+  --font: var(--font-outfit), var(--font-noto-sans-kr), "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
 }
 
 @theme inline {
@@ -47,7 +51,7 @@
   --font-sans: var(--font);
 }
 
-/* ── 기본 요소 & 레이아웃 골격 ──────────────────────────────────────────────── */
+/* ── 기본 요소 & 타이포그래피 ─────────────────────────────────────────────── */
 * {
   box-sizing: border-box;
 }
@@ -55,6 +59,9 @@
 body {
   margin: 0;
   min-width: 0;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
   background: var(--ground);
   color: var(--ink);
   font: 15px/1.6 var(--font);
@@ -70,6 +77,7 @@ select {
 button,
 a {
   -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 button {
@@ -96,11 +104,11 @@ button:disabled {
   color: var(--muted);
   background: var(--raised);
   border-color: var(--line);
-  opacity: 0.7;
+  opacity: 0.72;
 }
 
 strong {
-  font-weight: 650;
+  font-weight: 700;
 }
 
 input,
@@ -113,6 +121,12 @@ select {
   padding: 8px 12px;
   background: var(--surface);
   color: var(--ink);
+  transition: border-color 150ms ease, background-color 150ms ease;
+}
+
+input:hover:not(:disabled),
+select:hover:not(:disabled) {
+  border-color: var(--primary);
 }
 
 input::placeholder {
@@ -148,14 +162,19 @@ input[type="radio"] {
   top: 8px;
 }
 
+/* ── 페이지 컨테이너 & 헤더타이틀 ─────────────────────────────────────────── */
 .app-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   padding: 0 24px;
 }
 
 .content-shell {
+  width: 100%;
   max-width: 1200px;
-  margin: auto;
-  padding: 36px 0 72px;
+  margin: 0 auto;
+  padding: 28px 0 92px;
 }
 
 .page-heading {
@@ -164,12 +183,30 @@ input[type="radio"] {
   border-bottom: 1px solid var(--line);
 }
 
+.page-heading-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.page-heading-icon {
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--raised);
+  color: var(--primary);
+}
+
 .page-heading h1 {
   margin: 0;
-  font-size: clamp(28px, 3.6vw, 40px);
+  font-size: clamp(26px, 3.4vw, 36px);
   line-height: 1.25;
-  letter-spacing: -0.045em;
-  font-weight: 780;
+  letter-spacing: -0.04em;
+  font-weight: 800;
 }
 
 .page-heading p {
@@ -182,6 +219,7 @@ input[type="radio"] {
 .page-context {
   color: var(--muted);
   margin: 0 0 8px;
+  font-variant-numeric: tabular-nums;
 }
 
 .section-heading,
@@ -225,15 +263,30 @@ h3 {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
   align-items: start;
-  gap: clamp(20px, 3vw, 32px);
+  gap: clamp(20px, 3vw, 28px);
 }
 
-/* ── 고정 반투명 헤더와 알약형 내비게이션 ──────────────────────────────────── */
+.inline-icon-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.inline-icon-link svg {
+  flex-shrink: 0;
+  transition: transform 160ms ease;
+}
+
+.inline-icon-link:hover svg {
+  transform: translate(1px, -1px);
+}
+
+/* ── 고정 헤더 & 알약형 내비게이션 ────────────────────────────────────────── */
 .site-header {
   position: sticky;
   top: 0;
   z-index: 30;
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(255, 255, 255, 0.94);
   border-bottom: 1px solid var(--line);
   backdrop-filter: blur(10px);
 }
@@ -241,12 +294,12 @@ h3 {
 .header-inner {
   width: calc(100% - 48px);
   max-width: 1200px;
-  min-height: 70px;
+  min-height: 68px;
   margin: auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 18px;
+  gap: 16px;
 }
 
 .brand {
@@ -255,9 +308,9 @@ h3 {
   gap: 10px;
   min-height: 44px;
   flex-shrink: 0;
-  font-size: 21px;
+  font-size: 20px;
   font-weight: 800;
-  letter-spacing: -0.055em;
+  letter-spacing: -0.045em;
 }
 
 .brand:hover {
@@ -265,9 +318,9 @@ h3 {
 }
 
 .brand-symbol {
-  width: 32px;
-  height: 32px;
-  border: 6px solid var(--primary);
+  width: 30px;
+  height: 30px;
+  border: 5px solid var(--primary);
   border-radius: 50%;
   background: conic-gradient(var(--sprout) 0 57%, var(--fat) 57% 78%, var(--protein) 78%);
 }
@@ -276,27 +329,32 @@ h3 {
 .header-account {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   font-size: 14px;
 }
 
 .header-navigation {
   padding: 4px;
   border: 1px solid var(--line);
-  border-radius: 14px;
-  background: var(--ground);
+  border-radius: 13px;
+  background: var(--well);
 }
 
 .nav-link {
   display: inline-flex;
   align-items: center;
+  gap: 6px;
   min-height: 38px;
-  padding: 6px 13px;
-  border-radius: 10px;
+  padding: 6px 12px;
+  border-radius: 9px;
   color: var(--muted);
   font-weight: 600;
   white-space: nowrap;
   transition: background-color 160ms ease, color 160ms ease;
+}
+
+.nav-link-icon {
+  flex-shrink: 0;
 }
 
 .nav-link:hover {
@@ -317,7 +375,7 @@ h3 {
 }
 
 .header-account {
-  gap: 12px;
+  gap: 10px;
   flex-shrink: 0;
 }
 
@@ -332,19 +390,40 @@ h3 {
 }
 
 .account-name {
-  max-width: 140px;
-  padding: 5px 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 148px;
+  padding: 6px 12px;
+  border: 1px solid var(--line);
   border-radius: 999px;
-  background: var(--raised);
+  background: var(--well);
   color: var(--ink);
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 650;
+}
+
+.account-name span {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-/* ── 좌우 대칭 카드 패널 & 공통 폼/버튼 ────────────────────────────────────── */
+.account-dot {
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--carbs);
+}
+
+.header-logout-btn {
+  min-height: 40px;
+  padding: 6px 12px;
+  font-size: 13px;
+}
+
+/* ── 2단계 평면 건축 시트 패널 & 공통 폼/버튼 ────────────────────────────── */
 .input-panel,
 .results-panel,
 .registration-account,
@@ -357,11 +436,10 @@ h3 {
 .detail-specs,
 .records-section,
 .saved-meal-sets {
-  padding: clamp(20px, 3vw, 30px);
+  padding: clamp(20px, 3vw, 28px);
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 22px;
-  box-shadow: var(--shadow-card);
+  border-radius: 18px;
 }
 
 .body-fields,
@@ -404,10 +482,11 @@ h3 {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 9px 15px;
+  min-height: 44px;
+  padding: 8px 15px;
   border: 1px solid var(--line);
-  border-radius: 12px;
-  background: var(--ground);
+  border-radius: 11px;
+  background: var(--well);
   font-size: 14px;
   font-weight: 550;
   cursor: pointer;
@@ -439,6 +518,11 @@ h3 {
   border-radius: 10px;
   padding-right: 12px;
   background: var(--surface);
+  transition: border-color 150ms ease;
+}
+
+.input-with-unit:hover {
+  border-color: var(--primary);
 }
 
 .input-with-unit:focus-within {
@@ -487,7 +571,7 @@ h3 {
   gap: 6px;
   min-height: 44px;
   padding: 9px 16px;
-  border: 1px solid var(--control);
+  border: 1px solid var(--line-strong);
   border-radius: 11px;
   font-size: 14px;
   font-weight: 650;
@@ -520,6 +604,7 @@ h3 {
 
 .secondary-button:hover:not(:disabled) {
   background: var(--raised);
+  border-color: var(--control);
   text-decoration: none;
 }
 
@@ -532,7 +617,7 @@ h3 {
 .back-link,
 .auth-switch a {
   color: var(--primary);
-  font-weight: 600;
+  font-weight: 650;
   text-decoration: underline;
   text-underline-offset: 4px;
 }
@@ -580,7 +665,105 @@ h3 {
   margin-top: 16px;
 }
 
-/* ── 영양소 시맨틱 컬러 & 계산 결과 카드 ──────────────────────────────────── */
+/* ── Magic UI 프리미티브 ──────────────────────────────────────────────────── */
+.magic-dot-pattern {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.magic-shine-border {
+  --border-width: 1.5px;
+  --duration: 16s;
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  padding: var(--border-width);
+  background-size: 300% 300%;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: magic-shine var(--duration) linear infinite;
+}
+
+@keyframes magic-shine {
+  0% {
+    background-position: 0% 0%;
+  }
+  50% {
+    background-position: 100% 100%;
+  }
+  100% {
+    background-position: 0% 0%;
+  }
+}
+
+.magic-gauge {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 104px;
+  height: 104px;
+  flex-shrink: 0;
+}
+
+.magic-gauge-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.magic-gauge-arc {
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+  transition: stroke-dashoffset 700ms cubic-bezier(0.22, 1, 0.36, 1), stroke 250ms ease;
+  animation: magic-gauge-fill 850ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+@keyframes magic-gauge-fill {
+  from {
+    stroke-dashoffset: var(--gauge-circ);
+  }
+}
+
+.magic-gauge-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  pointer-events: none;
+}
+
+.magic-gauge-pct {
+  font-size: 22px;
+  line-height: 1.05;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+  color: #ffffff;
+}
+
+.magic-gauge-sublabel {
+  margin-top: 3px;
+  font-size: 11px;
+  font-weight: 650;
+  color: #cbe2cc;
+}
+
+.magic-ticker {
+  display: inline-block;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── 영양소 시맨틱 컬러 & 1단계 목표 칼로리 쇼케이스 ──────────────────────── */
 .calories {
   --nutrient-color: var(--calories);
 }
@@ -612,42 +795,53 @@ h3 {
 }
 
 .calorie-answer {
-  margin: 22px 0;
-  padding: 18px 20px;
-  border-radius: 14px;
-  background: var(--raised);
+  margin: 20px 0;
+  padding: 20px 22px;
+  border: 1px solid #123625;
+  border-radius: 16px;
+  background: linear-gradient(140deg, #174630 0%, #103222 100%);
+  color: #ffffff;
 }
 
-.calorie-answer > span {
+.calorie-answer :focus-visible {
+  outline: 2px solid var(--sprout);
+  outline-offset: 3px;
+}
+
+.calorie-answer-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-size: 13px;
-  font-weight: 600;
-  color: var(--muted);
+  font-weight: 650;
+  color: #cbe2cc;
 }
 
 .calorie-answer > div {
   display: flex;
   align-items: baseline;
   gap: 8px;
-  margin-top: 4px;
+  margin-top: 6px;
 }
 
 .calorie-answer strong {
   font-size: clamp(34px, 5vw, 48px);
-  line-height: 1.1;
-  letter-spacing: -0.045em;
+  line-height: 1.08;
+  letter-spacing: -0.04em;
   font-weight: 800;
   font-variant-numeric: tabular-nums;
+  color: var(--sprout);
 }
 
 .calorie-answer > div > span {
-  color: var(--muted);
+  color: #d7e6d6;
   font-weight: 600;
 }
 
 .energy-metrics {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
+  gap: 12px;
   margin: 0 0 24px;
 }
 
@@ -655,7 +849,7 @@ h3 {
   padding: 14px 16px;
   border: 1px solid var(--line);
   border-radius: 12px;
-  background: var(--ground);
+  background: var(--well);
 }
 
 .energy-metrics dt {
@@ -690,6 +884,17 @@ h3 {
   align-items: baseline;
   justify-content: space-between;
   gap: 12px;
+}
+
+.macro-row-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 650;
+}
+
+.macro-row-title svg {
+  color: var(--nutrient-color, var(--primary));
 }
 
 .macro-amount {
@@ -738,9 +943,13 @@ h3 {
   color: var(--muted);
 }
 
-/* ── 인증·목표 요약·기록 표·상세 ──────────────────────────────────────────── */
+/* ── 인증 · 목표 요약 · 기록 표 · 상세 ───────────────────────────────────── */
 .auth-shell {
   max-width: 520px;
+}
+
+.register-shell {
+  max-width: 1000px;
 }
 
 .auth-panel > h2 {
@@ -756,20 +965,15 @@ h3 {
   font-size: 14px;
 }
 
-.auth-shell > .back-link {
-  margin-top: 20px;
-}
-
 .dashboard-summary {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 20px;
   margin: 28px 0;
-  padding: 22px 26px;
+  padding: 20px 24px;
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 20px;
-  box-shadow: var(--shadow-card);
+  border-radius: 18px;
 }
 
 .dashboard-summary dt {
@@ -781,7 +985,7 @@ h3 {
 .dashboard-summary dd {
   margin: 4px 0 0;
   font-size: 28px;
-  font-weight: 750;
+  font-weight: 800;
   letter-spacing: -0.04em;
   font-variant-numeric: tabular-nums;
 }
@@ -814,7 +1018,7 @@ h3 {
 
 .record-table th,
 .record-table td {
-  padding: 14px 10px;
+  padding: 13px 10px;
   border-bottom: 1px solid var(--line);
   text-align: right;
   white-space: nowrap;
@@ -822,8 +1026,9 @@ h3 {
 
 .record-table th {
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 650;
   color: var(--muted);
+  background: var(--well);
 }
 
 .record-table th:first-child,
@@ -835,12 +1040,12 @@ h3 {
 
 .record-table th:first-child,
 .record-table td:first-child {
-  padding-left: 0;
+  padding-left: 10px;
 }
 
 .record-table th:last-child,
 .record-table td:last-child {
-  padding-right: 0;
+  padding-right: 10px;
 }
 
 .detail-specs h2 {
@@ -874,7 +1079,7 @@ h3 {
 
 .detail-specs dd {
   margin: 0;
-  font-weight: 600;
+  font-weight: 650;
   text-align: right;
 }
 
@@ -925,7 +1130,7 @@ h3 {
   padding: 14px 16px;
   border: 1px solid var(--line);
   border-radius: 12px;
-  background: var(--ground);
+  background: var(--well);
 }
 
 .meal-preview > p:first-child {
@@ -973,8 +1178,8 @@ h3 {
 .meal-group {
   padding: 16px 18px;
   border: 1px solid var(--line);
-  border-radius: 16px;
-  background: var(--ground);
+  border-radius: 12px;
+  background: var(--well);
 }
 
 .meal-group > .section-heading {
@@ -1035,14 +1240,14 @@ h3 {
 .meal-record-nutrients dt {
   font-size: 12px;
   color: var(--muted);
-  text-align: right;
+  text-align: left;
 }
 
 .meal-record-nutrients dd {
   margin: 3px 0 0;
   font-size: 13px;
-  font-weight: 600;
-  text-align: right;
+  font-weight: 650;
+  text-align: left;
 }
 
 .meal-empty {
@@ -1060,8 +1265,8 @@ h3 {
 .food-card {
   padding: 16px 18px;
   border: 1px solid var(--line);
-  border-radius: 16px;
-  background: var(--ground);
+  border-radius: 12px;
+  background: var(--well);
 }
 
 /* ── 식사 세트 ─────────────────────────────────────────────────────────────── */
@@ -1078,7 +1283,7 @@ h3 {
   cursor: pointer;
   color: var(--primary);
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 650;
   text-decoration: underline;
   text-underline-offset: 4px;
 }
@@ -1097,7 +1302,7 @@ h3 {
 }
 
 .saved-meal-sets {
-  margin-top: 36px;
+  margin-top: 32px;
 }
 
 .meal-set-list,
@@ -1170,23 +1375,42 @@ h3 {
   min-width: 130px;
 }
 
-/* ── 곰 코치 히어로 · 말풍선 배너 · 플로팅 팁 위젯 ─────────────────────────── */
+/* ── 1단계 곰 코치 히어로 스테이지 & 배너 · 플로팅 팁 위젯 ──────────────── */
 .dashboard-shell {
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 26px;
 }
 
 .coach-hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: clamp(18px, 2.4vw, 24px);
+  border: 1px solid #123625;
+  border-radius: 22px;
+  background: linear-gradient(140deg, #174630 0%, #103222 100%);
+  color: #ffffff;
+  overflow: hidden;
+}
+
+.coach-hero :focus-visible {
+  outline: 2px solid var(--sprout);
+  outline-offset: 3px;
+}
+
+.coach-hero-dots {
+  color: rgba(200, 230, 140, 0.13);
+}
+
+.coach-hero-main {
+  position: relative;
+  z-index: 1;
   display: grid;
-  grid-template-columns: minmax(190px, 240px) minmax(0, 1fr);
-  gap: clamp(18px, 3vw, 32px);
+  grid-template-columns: 164px minmax(0, 1fr) 236px;
+  gap: clamp(16px, 2.4vw, 24px);
   align-items: center;
-  padding: clamp(20px, 3.2vw, 32px);
-  border: 1px solid var(--line);
-  border-radius: 26px;
-  background: var(--surface);
-  box-shadow: var(--shadow-card);
 }
 
 .coach-hero-visual {
@@ -1199,11 +1423,11 @@ h3 {
   align-items: flex-end;
   justify-content: center;
   width: 100%;
-  max-width: 240px;
-  aspect-ratio: 5 / 5.4;
-  padding: 12px 12px 0;
-  border: 1px solid var(--line);
-  border-radius: 22px;
+  max-width: 164px;
+  aspect-ratio: 1 / 1;
+  padding: 10px 10px 0;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 18px;
   background: #dcead5 url("/gym-world.webp") center / cover;
   overflow: hidden;
 }
@@ -1217,7 +1441,7 @@ h3 {
 .coach-hero-content {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 13px;
   min-width: 0;
 }
 
@@ -1246,21 +1470,23 @@ h3 {
 }
 
 .coach-tag-pill {
-  background: var(--calories-tint);
-  color: var(--calories-ink);
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #f4faee;
 }
 
 .coach-goal-pill {
-  background: var(--ground);
-  border: 1px solid var(--line);
-  color: var(--muted);
+  background: rgba(200, 230, 140, 0.14);
+  border: 1px solid rgba(200, 230, 140, 0.34);
+  color: #e2f4c4;
   font-weight: 600;
 }
 
 .coach-hero-headline {
   margin: 0;
-  font-size: clamp(24px, 3vw, 34px);
-  line-height: 1.28;
+  color: #ffffff;
+  font-size: clamp(21px, 2.4vw, 28px);
+  line-height: 1.26;
   letter-spacing: -0.04em;
   font-weight: 800;
   word-break: keep-all;
@@ -1268,8 +1494,8 @@ h3 {
 
 .coach-hero-message {
   margin: 0;
-  max-width: 62ch;
-  color: var(--muted);
+  max-width: 58ch;
+  color: #d7e6d6;
   font-size: 15px;
   line-height: 1.65;
   word-break: keep-all;
@@ -1280,19 +1506,149 @@ h3 {
   align-items: center;
   flex-wrap: wrap;
   gap: 10px;
+  margin-top: 2px;
+}
+
+.hero-cta-primary,
+.hero-cta-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 9px 18px;
+  border-radius: 11px;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 160ms ease, border-color 160ms ease;
+}
+
+.hero-cta-primary {
+  border: 1px solid var(--sprout);
+  background: var(--sprout);
+  color: var(--sprout-ink);
+}
+
+.hero-cta-primary:hover {
+  background: #d7f0a3;
+  border-color: #d7f0a3;
+  text-decoration: none;
+}
+
+.hero-cta-ghost {
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.hero-cta-ghost:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.5);
+  text-decoration: none;
+}
+
+.coach-hero-gauge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 16px;
+  background: rgba(9, 31, 20, 0.38);
+}
+
+.coach-hero-gauge.is-empty {
+  text-align: center;
+  gap: 10px;
+}
+
+.coach-hero-gauge-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: rgba(200, 230, 140, 0.16);
+  color: var(--sprout);
+}
+
+.coach-hero-gauge.is-empty strong {
+  font-size: 15px;
+  color: #ffffff;
+}
+
+.coach-hero-gauge.is-empty p {
+  margin: 0;
+  color: #d7e6d6;
+  font-size: 13px;
+  line-height: 1.5;
+  word-break: keep-all;
+}
+
+.coach-hero-gauge-meta {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  width: 100%;
+  margin: 0;
+}
+
+.coach-hero-gauge-meta > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 7px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.coach-hero-gauge-meta > div:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.coach-hero-gauge-meta dt {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #c5dac3;
+  font-size: 12px;
+  font-weight: 550;
+}
+
+.coach-hero-gauge-meta dd {
+  margin: 0;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.coach-hero-gauge-meta dd.is-over {
+  color: #ffd0a6;
+}
+
+.coach-hero-gauge-meta small {
+  color: #c5dac3;
+  font-size: 11px;
+  font-weight: 500;
 }
 
 .coach-tip-bar {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 12px 16px;
-  margin-top: 4px;
-  padding: 14px 16px;
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  background: var(--ground);
+  padding: 13px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .coach-tip-copy {
@@ -1305,33 +1661,48 @@ h3 {
 
 .coach-tip-badge {
   flex-shrink: 0;
-  padding: 3px 9px;
+  padding: 3px 10px;
   border-radius: 999px;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  color: var(--primary);
+  background: rgba(200, 230, 140, 0.18);
+  border: 1px solid rgba(200, 230, 140, 0.34);
+  color: #e2f4c4;
   font-size: 12px;
   font-weight: 700;
 }
 
 .coach-tip-copy strong {
   display: block;
+  color: #ffffff;
   font-size: 14px;
   font-weight: 700;
 }
 
 .coach-tip-copy p {
   margin: 3px 0 0;
-  color: var(--muted);
+  color: #d7e6d6;
   font-size: 13px;
   line-height: 1.55;
 }
 
 .coach-tip-next {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   min-height: 40px;
-  padding: 6px 12px;
+  padding: 6px 13px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
   font-size: 13px;
+  font-weight: 650;
   flex-shrink: 0;
+  transition: background-color 150ms ease, border-color 150ms ease;
+}
+
+.coach-tip-next:hover {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.45);
 }
 
 .coach-banner {
@@ -1342,7 +1713,8 @@ h3 {
   margin: 14px 0 20px;
   padding: 14px 18px;
   border: 1px solid var(--line);
-  border-radius: 18px;
+  border-left: 4px solid var(--primary);
+  border-radius: 14px;
   background: var(--raised);
 }
 
@@ -1384,7 +1756,8 @@ h3 {
 }
 
 .coach-banner-badge {
-  padding: 2px 8px;
+  padding: 2px 9px;
+  border: 1px solid var(--line);
   border-radius: 999px;
   background: var(--surface);
   color: var(--ink);
@@ -1433,11 +1806,13 @@ h3 {
 
 .coach-floating-trigger:hover {
   background: var(--primary-hover);
+  transform: translateY(-1px);
 }
 
 .coach-floating-trigger img {
   width: 30px;
   height: 30px;
+  border: 1.5px solid var(--sprout);
   border-radius: 50%;
   background: #dcead5;
   object-fit: cover;
@@ -1447,10 +1822,22 @@ h3 {
 .coach-floating-panel {
   width: min(350px, calc(100vw - 32px));
   padding: 16px;
-  border: 1px solid var(--line);
-  border-radius: 20px;
+  border: 1px solid var(--line-strong);
+  border-radius: 18px;
   background: var(--surface);
   box-shadow: var(--shadow-float);
+  animation: coach-panel-in 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes coach-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .coach-floating-header {
@@ -1491,11 +1878,11 @@ h3 {
 .coach-floating-close {
   display: grid;
   place-items: center;
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   border: 1px solid var(--line);
   border-radius: 10px;
-  background: var(--ground);
+  background: var(--well);
   color: var(--ink);
 }
 
@@ -1511,11 +1898,11 @@ h3 {
 }
 
 .coach-floating-cats button {
-  min-height: 32px;
+  min-height: 34px;
   padding: 4px 10px;
   border: 1px solid var(--line);
   border-radius: 999px;
-  background: var(--ground);
+  background: var(--well);
   color: var(--muted);
   font-size: 12px;
   font-weight: 600;
@@ -1530,8 +1917,9 @@ h3 {
 
 .coach-floating-bubble {
   padding: 14px;
-  border-radius: 14px;
-  background: var(--ground);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--well);
 }
 
 .coach-floating-bubble h3 {
@@ -1585,9 +1973,8 @@ h3 {
 .dashboard-card {
   padding: clamp(18px, 3vw, 26px);
   border: 1px solid var(--line);
-  border-radius: 22px;
+  border-radius: 18px;
   background: var(--surface);
-  box-shadow: var(--shadow-card);
 }
 
 .dashboard-card-head {
@@ -1629,8 +2016,9 @@ h3 {
 
 .dashboard-mini-kpis > div {
   padding: 12px;
+  border: 1px solid var(--line);
   border-radius: 12px;
-  background: var(--ground);
+  background: var(--well);
 }
 
 .dashboard-mini-kpis dt {
@@ -1656,12 +2044,16 @@ h3 {
 }
 
 .dashboard-mini-bar {
-  fill: var(--primary);
-  opacity: 0.78;
+  fill: url(#dash-bar-grad);
+  opacity: 0.88;
   transition: opacity 150ms ease;
 }
 
-.dashboard-mini-bar-group.is-today .dashboard-mini-bar,
+.dashboard-mini-bar-group.is-today .dashboard-mini-bar {
+  fill: url(#dash-bar-today-grad);
+  opacity: 1;
+}
+
 .dashboard-mini-bar-group:hover .dashboard-mini-bar {
   opacity: 1;
 }
@@ -1679,8 +2071,8 @@ h3 {
   gap: 12px;
   padding: 18px;
   border: 1px dashed var(--control);
-  border-radius: 14px;
-  background: var(--ground);
+  border-radius: 12px;
+  background: var(--well);
 }
 
 .dashboard-empty-mini p {
@@ -1706,8 +2098,8 @@ h3 {
   min-height: 60px;
   padding: 12px 14px;
   border: 1px solid var(--line);
-  border-radius: 14px;
-  background: var(--ground);
+  border-radius: 12px;
+  background: var(--well);
   transition: background-color 150ms ease, border-color 150ms ease;
 }
 
@@ -1746,8 +2138,9 @@ h3 {
 
 .dashboard-metabolic-dl > div {
   padding: 12px;
+  border: 1px solid var(--line);
   border-radius: 12px;
-  background: var(--ground);
+  background: var(--well);
 }
 
 .dashboard-metabolic-dl dt {
@@ -1786,8 +2179,7 @@ h3 {
   padding: clamp(18px, 3vw, 28px);
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 22px;
-  box-shadow: var(--shadow-card);
+  border-radius: 18px;
 }
 
 .food-search-heading {
@@ -1830,10 +2222,10 @@ h3 {
 
 .food-search-form {
   display: grid;
-  grid-template-columns: minmax(140px, auto) minmax(0, 1fr) auto;
+  grid-template-columns: 160px minmax(0, 1fr) 110px;
   align-items: end;
   gap: 10px;
-  max-width: 780px;
+  max-width: 100%;
 }
 
 .food-search-form > button {
@@ -1879,9 +2271,9 @@ h3 {
 .brand-picker {
   margin-top: 20px;
   padding: 16px 18px;
-  background: var(--ground);
+  background: var(--well);
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: 14px;
 }
 
 .brand-picker-header {
@@ -1967,7 +2359,15 @@ h3 {
 }
 
 .brand-chip.is-major:not(.is-active) {
-  border-color: #b7cab6;
+  border-color: var(--line-strong);
+}
+
+.brand-major-dot {
+  width: 6px;
+  height: 6px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--carbs);
 }
 
 .brand-chip.is-active {
@@ -1975,6 +2375,10 @@ h3 {
   border-color: var(--primary);
   color: #ffffff;
   font-weight: 650;
+}
+
+.brand-chip.is-active .brand-major-dot {
+  background: var(--sprout);
 }
 
 .brand-chip-name {
@@ -1988,7 +2392,7 @@ h3 {
   min-width: 20px;
   padding: 1px 6px;
   border-radius: 999px;
-  background: rgba(31, 71, 50, 0.1);
+  background: rgba(23, 70, 48, 0.1);
   color: var(--primary);
   font-size: 12px;
   font-weight: 700;
@@ -2014,6 +2418,7 @@ h3 {
   gap: 10px 14px;
   margin-top: 12px;
   padding: 10px 12px;
+  border: 1px solid var(--line);
   border-radius: 10px;
   background: var(--surface);
 }
@@ -2032,6 +2437,7 @@ h3 {
   gap: 8px 16px;
   margin-top: 14px;
   padding: 10px 14px;
+  border: 1px solid rgba(23, 70, 48, 0.2);
   border-radius: 10px;
   background: var(--sprout);
   color: var(--sprout-ink);
@@ -2049,7 +2455,7 @@ h3 {
   gap: 4px;
   min-height: 36px;
   padding: 4px 10px;
-  border: 1px solid rgba(27, 56, 38, 0.28);
+  border: 1px solid rgba(19, 37, 27, 0.28);
   border-radius: 8px;
   background: var(--surface);
   color: var(--sprout-ink);
@@ -2059,7 +2465,7 @@ h3 {
 }
 
 .brand-clear-button:hover:not(:disabled) {
-  background: var(--ground);
+  background: var(--well);
 }
 
 .food-search-results-panel {
@@ -2093,9 +2499,15 @@ h3 {
 
 .food-search-results > li {
   min-width: 0;
-  background: var(--ground);
+  background: var(--well);
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: 12px;
+  transition: border-color 150ms ease, background-color 150ms ease;
+}
+
+.food-search-results > li:has(details[open]) {
+  background: var(--surface);
+  border-color: var(--control);
 }
 
 .food-search-result-heading {
@@ -2184,7 +2596,7 @@ h3 {
   flex-shrink: 0;
   color: var(--primary);
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 650;
 }
 
 .food-search-details-label::after {
@@ -2219,16 +2631,27 @@ h3 {
   gap: 8px;
   margin: 0;
   padding: 12px;
-  background: var(--surface);
+  background: var(--well);
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 10px;
 }
 
 .food-search-nutrients dt {
-  padding-top: 4px;
+  padding-top: 5px;
   border-top: 3px solid var(--nutrient-color);
   color: var(--muted);
   font-size: 12px;
+}
+
+.food-search-nutrient-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.food-search-nutrient-label svg {
+  color: var(--nutrient-color);
+  flex-shrink: 0;
 }
 
 .food-search-nutrients dd {
@@ -2288,8 +2711,7 @@ h3 {
   padding: 12px 16px;
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 16px;
-  box-shadow: var(--shadow-card);
+  border-radius: 15px;
 }
 
 .date-stepper {
@@ -2383,8 +2805,7 @@ h3 {
   padding: clamp(20px, 3vw, 28px);
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 22px;
-  box-shadow: var(--shadow-card);
+  border-radius: 18px;
 }
 
 .dashboard-shell .meal-suggestions {
@@ -2454,8 +2875,9 @@ h3 {
   gap: 12px;
   margin-top: 14px;
   padding: 12px 16px;
-  border-radius: 14px;
-  background: var(--ground);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--well);
 }
 
 .nutrient-gap-grid {
@@ -2472,8 +2894,9 @@ h3 {
   min-width: 0;
   padding: 15px;
   border: 1px solid var(--line);
-  border-radius: 16px;
-  background: var(--ground);
+  border-top: 3px solid var(--nutrient-color, var(--primary));
+  border-radius: 12px;
+  background: var(--well);
   color: var(--ink);
   text-align: left;
   transition: border-color 160ms ease, background-color 160ms ease;
@@ -2485,6 +2908,7 @@ button.nutrient-gap-card {
 
 button.nutrient-gap-card:hover {
   border-color: var(--control);
+  border-top-color: var(--nutrient-color, var(--primary));
   background: var(--surface);
 }
 
@@ -2499,6 +2923,25 @@ button.nutrient-gap-card:hover {
   align-items: center;
   justify-content: space-between;
   gap: 8px;
+}
+
+.nutrient-gap-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.nutrient-gap-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border-radius: 7px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--nutrient-color, var(--primary));
 }
 
 .nutrient-gap-name {
@@ -2516,7 +2959,7 @@ button.nutrient-gap-card:hover {
 
 .nutrient-gap-consumed strong {
   font-size: 26px;
-  font-weight: 780;
+  font-weight: 800;
   letter-spacing: -0.04em;
   line-height: 1.1;
 }
@@ -2582,7 +3025,7 @@ button.nutrient-gap-card:hover {
   padding: 4px;
   border: 1px solid var(--line);
   border-radius: 12px;
-  background: var(--ground);
+  background: var(--well);
   gap: 4px;
 }
 
@@ -2603,7 +3046,7 @@ button.nutrient-gap-card:hover {
   background: var(--surface);
   color: var(--ink);
   font-weight: 700;
-  box-shadow: 0 1px 3px rgba(25, 45, 34, 0.08);
+  border: 1px solid var(--line);
 }
 
 .suggestion-toolbar-hint {
@@ -2614,7 +3057,7 @@ button.nutrient-gap-card:hover {
 
 .suggestion-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
   gap: 12px;
   margin: 0;
   padding: 0;
@@ -2628,8 +3071,8 @@ button.nutrient-gap-card:hover {
   min-width: 0;
   padding: 16px;
   border: 1px solid var(--line);
-  border-radius: 16px;
-  background: var(--ground);
+  border-radius: 12px;
+  background: var(--well);
 }
 
 .suggestion-card.is-guide {
@@ -2647,7 +3090,8 @@ button.nutrient-gap-card:hover {
   margin: 0;
   font-size: 15px;
   font-weight: 700;
-  overflow-wrap: anywhere;
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
 .suggestion-category {
@@ -2714,7 +3158,7 @@ button.nutrient-gap-card:hover {
   padding: 16px;
   border: 1px dashed var(--control);
   border-radius: 12px;
-  background: var(--ground);
+  background: var(--well);
 }
 
 .suggestion-empty p {
@@ -2778,7 +3222,6 @@ button.nutrient-gap-card:hover {
   border: 1px solid var(--line);
   border-radius: 14px;
   background: var(--surface);
-  box-shadow: var(--shadow-card);
 }
 
 .stats-seg-item {
@@ -2844,9 +3287,9 @@ button.nutrient-gap-card:hover {
   min-width: 0;
   padding: 18px;
   border: 1px solid var(--line);
-  border-radius: 18px;
+  border-top: 3px solid var(--stat-accent);
+  border-radius: 14px;
   background: var(--surface);
-  box-shadow: var(--shadow-card);
 }
 
 .stats-kpi-card dt {
@@ -2862,12 +3305,12 @@ button.nutrient-gap-card:hover {
   gap: 6px 8px;
   margin: 4px 0 0;
   font-size: 26px;
-  font-weight: 780;
+  font-weight: 800;
   letter-spacing: -0.04em;
   font-variant-numeric: tabular-nums;
 }
 
-.stats-kpi-card dd > span:not(.status-badge) {
+.stats-kpi-card dd > span:not(.status-badge, .magic-ticker) {
   color: var(--muted);
   font-size: 13px;
   font-weight: 550;
@@ -2894,9 +3337,8 @@ button.nutrient-gap-card:hover {
   margin: 0;
   padding: clamp(18px, 3vw, 26px);
   border: 1px solid var(--line);
-  border-radius: 22px;
+  border-radius: 18px;
   background: var(--surface);
-  box-shadow: var(--shadow-card);
 }
 
 .stats-chart-header {
@@ -2934,7 +3376,7 @@ button.nutrient-gap-card:hover {
   gap: 6px;
   padding: 4px 10px;
   border-radius: 999px;
-  background: var(--ground);
+  background: var(--well);
   border: 1px solid var(--line);
   color: var(--ink);
   font-size: 12px;
@@ -2962,8 +3404,8 @@ button.nutrient-gap-card:hover {
   margin-bottom: 16px;
   padding: 12px 16px;
   border: 1px solid var(--line);
-  border-radius: 14px;
-  background: var(--ground);
+  border-radius: 12px;
+  background: var(--well);
 }
 
 .stats-inspector-main {
@@ -3047,14 +3489,14 @@ button.nutrient-gap-card:hover {
 }
 
 .stats-target-line {
-  stroke: var(--stat-accent);
+  stroke: var(--stat-accent, var(--primary));
   stroke-width: 1.5;
   stroke-dasharray: 5 4;
   opacity: 0.78;
 }
 
 .stats-target-label {
-  fill: var(--stat-ink);
+  fill: var(--stat-ink, var(--calories-ink));
   font-size: 11px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
@@ -3097,7 +3539,7 @@ button.nutrient-gap-card:hover {
 }
 
 .stats-svg-unrecorded {
-  fill: var(--ground);
+  fill: var(--well);
   stroke: var(--line);
   stroke-dasharray: 3 3;
 }
@@ -3110,8 +3552,7 @@ button.nutrient-gap-card:hover {
 }
 
 .stats-svg-area {
-  fill: var(--stat-accent);
-  opacity: 0.14;
+  fill: url(#stats-area-grad);
 }
 
 .stats-svg-line {
@@ -3157,8 +3598,9 @@ button.nutrient-gap-card:hover {
   gap: 8px 16px;
   margin-top: 12px;
   padding: 10px 14px;
+  border: 1px solid var(--line);
   border-radius: 10px;
-  background: var(--ground);
+  background: var(--well);
   font-size: 13px;
   font-variant-numeric: tabular-nums;
 }
@@ -3315,8 +3757,9 @@ button.nutrient-gap-card:hover {
   flex-direction: column;
   gap: 3px;
   padding: 12px;
+  border: 1px solid var(--line);
   border-radius: 12px;
-  background: var(--ground);
+  background: var(--well);
 }
 
 .stats-weekly-card span {
@@ -3342,7 +3785,7 @@ button.nutrient-gap-card:hover {
   gap: 10px;
   padding: 28px;
   border: 1px dashed var(--control);
-  border-radius: 22px;
+  border-radius: 18px;
   background: var(--surface);
   color: var(--primary);
 }
@@ -3363,9 +3806,8 @@ button.nutrient-gap-card:hover {
 .stats-records-section {
   padding: clamp(18px, 3vw, 26px);
   border: 1px solid var(--line);
-  border-radius: 22px;
+  border-radius: 18px;
   background: var(--surface);
-  box-shadow: var(--shadow-card);
 }
 
 .stats-records-header {
@@ -3392,7 +3834,7 @@ button.nutrient-gap-card:hover {
   padding: 4px;
   border: 1px solid var(--line);
   border-radius: 10px;
-  background: var(--ground);
+  background: var(--well);
 }
 
 .stats-table-filter button {
@@ -3411,6 +3853,7 @@ button.nutrient-gap-card:hover {
   background: var(--surface);
   color: var(--ink);
   font-weight: 700;
+  border: 1px solid var(--line);
 }
 
 .stats-table tbody tr {
@@ -3419,7 +3862,7 @@ button.nutrient-gap-card:hover {
 }
 
 .stats-table tbody tr:hover {
-  background: var(--ground);
+  background: var(--well);
 }
 
 .stats-table tbody tr.is-selected-row {
@@ -3443,20 +3886,30 @@ button.nutrient-gap-card:hover {
 }
 
 .trainer-panel {
+  position: relative;
   overflow: hidden;
   padding: 26px;
   border: 1px solid var(--line);
-  border-radius: 22px;
+  border-radius: 18px;
   background: var(--surface);
   color: var(--ink);
-  box-shadow: var(--shadow-card);
+}
+
+.trainer-dots {
+  color: rgba(23, 70, 48, 0.08);
+}
+
+.trainer-panel > *:not(.magic-dot-pattern) {
+  position: relative;
+  z-index: 1;
 }
 
 .trainer-scene {
   position: relative;
   height: 220px;
   overflow: hidden;
-  border-radius: 16px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
   background: #dcead5 url("/gym-world.webp") center / cover;
 }
 
@@ -3470,6 +3923,9 @@ button.nutrient-gap-card:hover {
 }
 
 .trainer-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   margin: 14px 0 8px;
   font-weight: 750;
   color: var(--primary);
@@ -3478,8 +3934,8 @@ button.nutrient-gap-card:hover {
 .trainer-message {
   padding: 16px 18px;
   border: 1px solid var(--line);
-  border-radius: 4px 18px 18px 18px;
-  background: var(--ground);
+  border-radius: 4px 16px 16px 16px;
+  background: var(--well);
   color: var(--ink);
   font-size: 16px;
   line-height: 1.65;
@@ -3487,10 +3943,35 @@ button.nutrient-gap-card:hover {
   animation: trainer-arrive 0.3s ease-out;
 }
 
+.trainer-progress-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.trainer-progress-track {
+  flex: 1;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--raised);
+  overflow: hidden;
+}
+
+.trainer-progress-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--primary);
+  transition: width 240ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 .trainer-progress {
-  margin: 16px 0 0;
+  margin: 0;
   color: var(--muted);
   font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
 }
 
 .conversation-fields [hidden] {
@@ -3513,6 +3994,9 @@ button.nutrient-gap-card:hover {
 }
 
 .world-home {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   margin: 0 -24px;
 }
 
@@ -3527,7 +4011,8 @@ button.nutrient-gap-card:hover {
 
 .world-container {
   position: relative;
-  min-height: clamp(460px, calc(100svh - 70px), 870px);
+  flex: 1;
+  min-height: 440px;
   background: #e8f2e6;
   overflow: hidden;
 }
@@ -3548,13 +4033,13 @@ button.nutrient-gap-card:hover {
   top: var(--speech-top, 36%);
   left: 50%;
   width: max-content;
-  max-width: min(280px, calc(100% - 32px));
-  padding: 10px 14px;
+  max-width: min(290px, calc(100% - 32px));
+  padding: 12px 16px;
   transform: translate(-50%, -100%);
   border: 1px solid #779584;
   border-radius: 14px;
   background: #fffff7;
-  box-shadow: 0 4px 14px rgba(25, 45, 34, 0.16);
+  box-shadow: 0 6px 18px rgba(19, 37, 27, 0.16);
 }
 
 .world-dialogue::after {
@@ -3595,15 +4080,26 @@ button.nutrient-gap-card:hover {
 }
 
 /* ── 통합 반응형 브레이크포인트 (375px 모바일 가로 스크롤 방지) ───────────────── */
-@media (max-width: 900px) {
-  .coach-hero,
+@media (max-width: 980px) {
+  .coach-hero-main {
+    grid-template-columns: 170px minmax(0, 1fr);
+  }
+
+  .coach-hero-gauge {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 20px;
+  }
+
+  .coach-hero-gauge-meta {
+    flex: 1;
+    max-width: 420px;
+  }
+
   .dashboard-bento,
   .stats-day-layout {
     grid-template-columns: minmax(0, 1fr);
-  }
-
-  .coach-hero-stage {
-    max-width: 200px;
   }
 
   .nutrient-gap-grid,
@@ -3614,6 +4110,11 @@ button.nutrient-gap-card:hover {
 }
 
 @media (max-width: 760px) {
+  input,
+  select {
+    font-size: 16px;
+  }
+
   .header-inner {
     width: calc(100% - 32px);
     min-height: 0;
@@ -3663,11 +4164,11 @@ button.nutrient-gap-card:hover {
   }
 
   .world-container {
-    min-height: max(440px, calc(100svh - 116px));
+    min-height: 420px;
   }
 
   .world-dialogue {
-    max-width: min(220px, calc(100% - 32px));
+    max-width: min(230px, calc(100% - 32px));
   }
 
   .world-actions {
@@ -3676,16 +4177,53 @@ button.nutrient-gap-card:hover {
   }
 }
 
+@media (max-width: 620px) {
+  .coach-hero-main {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .coach-hero-stage {
+    max-width: 136px;
+  }
+
+  .coach-hero-gauge {
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .coach-hero-gauge .magic-gauge {
+    width: 88px;
+    height: 88px;
+  }
+
+  .coach-hero-gauge .magic-gauge-pct {
+    font-size: 19px;
+  }
+
+  .coach-hero-gauge-meta {
+    max-width: none;
+  }
+}
+
 @media (max-width: 560px) {
   .header-navigation {
-    flex-wrap: wrap;
-    gap: 4px;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 2px;
+    padding: 3px;
+    width: 100%;
   }
 
   .nav-link {
-    padding: 6px 8px;
-    font-size: 12px;
+    flex-direction: column;
+    justify-content: center;
+    gap: 3px;
+    min-height: 44px;
+    padding: 5px 2px;
+    font-size: 11px;
+    line-height: 1.2;
+    text-align: center;
   }
 
   .food-search-form {
@@ -3746,10 +4284,16 @@ button.nutrient-gap-card:hover {
     scroll-behavior: auto !important;
   }
 
-  .trainer-message {
+  .trainer-message,
+  .coach-floating-panel,
+  .magic-shine-border,
+  .magic-gauge-arc {
     animation: none;
   }
 
+  .magic-gauge-arc,
+  .trainer-progress-fill,
+  .inline-icon-link svg,
   .primary-button,
   .secondary-button,
   .nav-link,
@@ -3762,8 +4306,14 @@ button.nutrient-gap-card:hover {
   .stats-svg-bar,
   .stats-table tbody tr,
   .coach-floating-trigger,
+  .coach-tip-next,
+  .hero-cta-primary,
+  .hero-cta-ghost,
   .dashboard-meal-item,
-  .dashboard-mini-bar {
+  .dashboard-mini-bar,
+  input,
+  select,
+  .input-with-unit {
     transition: none;
   }
 }

@@ -107,8 +107,11 @@ export function GymWorld() {
       const height = element.clientHeight;
       if (!width || !height) return;
       camera.aspect = width / height;
-      // 세로 화면에서는 시야각을 넓혀 코치와 양옆 운동기구를 함께 보여줍니다.
-      camera.fov = width < 600 ? Math.min(105, THREE.MathUtils.radToDeg(2 * Math.atan(.58 / camera.aspect))) : 48;
+      // 세로 화면에서는 시야각을 적정선으로 넓혀 천장이 과도하게 차지하지 않게 코치와 기구를 담습니다.
+      camera.fov =
+        width < 600 || camera.aspect < 0.85
+          ? Math.min(74, THREE.MathUtils.radToDeg(2 * Math.atan(0.58 / camera.aspect)))
+          : 48;
       camera.updateProjectionMatrix();
       renderer.setSize(width, height);
     };
@@ -130,7 +133,7 @@ export function GymWorld() {
       doors[0].rotation.y = open * Math.PI * .48;
       doors[1].rotation.y = -open * Math.PI * .48;
       camera.position.z = 9 - 4.2 * walk;
-      camera.lookAt(0, 1.35, -2.5);
+      camera.lookAt(0, camera.aspect < 0.85 ? 1.15 : 1.35, -2.5);
       const motionTime = reducedMotion ? 0 : elapsed;
       coach.position.y = (1 - Math.cos(motionTime * 2)) * .015;
       wavingArm.rotation.z = 2.15 + Math.sin(motionTime * 3) * .22;

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { CoachBanner } from "@/components/CoachBear";
+import { SparklesIcon } from "@/components/Icons";
 import { loginAction } from "@/lib/actions";
 import { authenticationConfigured } from "@/lib/config";
 import { safeReturnTo } from "@/lib/authValidation";
@@ -22,7 +23,12 @@ export default async function LoginPage({ searchParams }: Props) {
   return (
     <main id="main" className="content-shell auth-shell">
       <div className="page-heading">
-        <h1 id="login-heading">로그인</h1>
+        <div className="page-heading-title">
+          <span className="page-heading-icon">
+            <SparklesIcon size={20} />
+          </span>
+          <h1 id="login-heading">로그인</h1>
+        </div>
         <p>오늘의 섭취량, 부족 영양소 추천, 기간별 통계까지 이어서 확인하세요.</p>
       </div>
       <CoachBanner

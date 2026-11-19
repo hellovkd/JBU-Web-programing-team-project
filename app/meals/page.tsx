@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon } from "@/components/Icons";
+import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon, MealsIcon } from "@/components/Icons";
 import { MealForm } from "@/components/MealForm";
 import { MealSets, SaveMealSetForm } from "@/components/MealSets";
 import { MealSuggestions } from "@/components/MealSuggestions";
@@ -82,7 +82,12 @@ export default async function MealsPage({ searchParams }: Props) {
   return (
     <main id="main" className="content-shell">
       <div className="page-heading">
-        <h1>식단 기록</h1>
+        <div className="page-heading-title">
+          <span className="page-heading-icon">
+            <MealsIcon size={20} />
+          </span>
+          <h1>식단 기록</h1>
+        </div>
         <p>날짜별 식사를 기록하고 하루 섭취량과 부족한 영양소에 맞는 추천 음식을 확인하세요.</p>
       </div>
       {query.date && !validDate ? <p className="notice warning-notice" role="alert">날짜를 확인해주세요. 오늘 날짜의 기록을 표시합니다.</p> : null}

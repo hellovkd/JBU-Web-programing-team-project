@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { registerAction } from "@/lib/actions";
 import { authenticationConfigured } from "@/lib/config";
+import { SparklesIcon } from "@/components/Icons";
 import { SubmitButton } from "@/components/SubmitButton";
 import { BodyFields } from "@/components/BodyFields";
 import { RegisterConversation } from "@/components/RegisterConversation";
@@ -26,9 +27,14 @@ export default async function RegisterPage({ searchParams }: Props) {
   if (configured && (await auth())?.user) redirect("/");
   // 가입 입력과 검증은 유지하고 계정·신체 정보에 필요한 안내만 표시합니다.
   return (
-    <main id="main" className="content-shell">
+    <main id="main" className="content-shell register-shell">
       <div className="page-heading">
-        <h1>회원가입</h1>
+        <div className="page-heading-title">
+          <span className="page-heading-icon">
+            <SparklesIcon size={20} />
+          </span>
+          <h1>회원가입</h1>
+        </div>
       </div>
       {!configured ? (
         <p className="notice warning-notice" role="status">

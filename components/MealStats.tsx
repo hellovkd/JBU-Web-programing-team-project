@@ -3,7 +3,14 @@
 import Link from "next/link";
 import { useState, type KeyboardEvent } from "react";
 import { CoachBanner } from "@/components/CoachBear";
-import { AlertTriangleIcon, CalendarIcon, ChartBarIcon, CheckCircleIcon } from "@/components/Icons";
+import {
+  AlertTriangleIcon,
+  ArrowUpRightIcon,
+  CalendarIcon,
+  ChartBarIcon,
+  CheckCircleIcon,
+} from "@/components/Icons";
+import { NumberTicker } from "@/components/MagicPrimitives";
 import { getStatsCoachComment } from "@/lib/coachTips";
 import {
   axisCeiling,
@@ -191,14 +198,25 @@ export function MealStats({ bundle, metric, target, today }: Props) {
           <div className="stats-kpi-card">
             <dt>{formatShortDate(anchorDate)} {label}</dt>
             <dd>
-              {dayMetricVal !== null ? format(dayMetricVal) : "—"} <span>{unit}</span>
+              {dayMetricVal !== null ? (
+                <NumberTicker value={dayMetricVal} decimalPlaces={metric === "calories" ? 0 : 1} />
+              ) : (
+                "—"
+              )}{" "}
+              <span>{unit}</span>
             </dd>
             <p>{dayMetricVal !== null ? formatFullDate(anchorDate) : "기록된 식단이 없습니다"}</p>
           </div>
           <div className="stats-kpi-card">
             <dt>목표 대비</dt>
             <dd>
-              {dayTargetRate !== null ? `${dayTargetRate}%` : "—"}
+              {dayTargetRate !== null ? (
+                <>
+                  <NumberTicker value={dayTargetRate} />%
+                </>
+              ) : (
+                "—"
+              )}
               {dayMetricVal !== null && targetValue ? (
                 <span className={`status-badge status-${dayStatus.code}`}>{dayStatus.label}</span>
               ) : null}
@@ -208,7 +226,7 @@ export function MealStats({ bundle, metric, target, today }: Props) {
           <div className="stats-kpi-card">
             <dt>기록한 음식</dt>
             <dd>
-              {dayRecords.length} <span>개</span>
+              <NumberTicker value={dayRecords.length} /> <span>개</span>
             </dd>
             <p>{dayBreakdown.filter((item) => item.count > 0).length}개 끼니에 분산 기록</p>
           </div>
@@ -225,14 +243,19 @@ export function MealStats({ bundle, metric, target, today }: Props) {
           <div className="stats-kpi-card">
             <dt>기록한 날</dt>
             <dd>
-              {recordedCount} <span>/ {days}일</span>
+              <NumberTicker value={recordedCount} /> <span>/ {days}일</span>
             </dd>
             <p>{formatShortDate(startDate)} ~ {formatShortDate(anchorDate)}</p>
           </div>
           <div className="stats-kpi-card">
             <dt>기록일 하루 평균</dt>
             <dd>
-              {recordedCount > 0 ? format(average) : "—"} <span>{unit}</span>
+              {recordedCount > 0 ? (
+                <NumberTicker value={average} decimalPlaces={metric === "calories" ? 0 : 1} />
+              ) : (
+                "—"
+              )}{" "}
+              <span>{unit}</span>
             </dd>
             <p>
               {targetValue && recordedCount > 0
@@ -243,14 +266,24 @@ export function MealStats({ bundle, metric, target, today }: Props) {
           <div className="stats-kpi-card">
             <dt>기간 합계</dt>
             <dd>
-              {recordedCount > 0 ? format(total) : "—"} <span>{unit}</span>
+              {recordedCount > 0 ? (
+                <NumberTicker value={total} decimalPlaces={metric === "calories" ? 0 : 1} />
+              ) : (
+                "—"
+              )}{" "}
+              <span>{unit}</span>
             </dd>
             <p>최근 {days}일간 기록 합산</p>
           </div>
           <div className="stats-kpi-card">
             <dt>최고 섭취일</dt>
             <dd>
-              {highestEntry && recordedCount > 0 ? format(highestValue) : "—"} <span>{unit}</span>
+              {highestEntry && recordedCount > 0 ? (
+                <NumberTicker value={highestValue} decimalPlaces={metric === "calories" ? 0 : 1} />
+              ) : (
+                "—"
+              )}{" "}
+              <span>{unit}</span>
             </dd>
             <p>
               {highestEntry && recordedCount > 0
@@ -278,8 +311,8 @@ export function MealStats({ bundle, metric, target, today }: Props) {
               </figcaption>
 
               {(() => {
-                const svgW = 460;
-                const svgH = 220;
+                const svgW = 520;
+                const svgH = 230;
                 const pad = { top: 26, right: 20, bottom: 44, left: 48 };
                 const plotW = svgW - pad.left - pad.right;
                 const plotH = svgH - pad.top - pad.bottom;
@@ -455,8 +488,9 @@ export function MealStats({ bundle, metric, target, today }: Props) {
               </div>
 
               <div className="stats-day-action-row">
-                <Link href={`/meals?date=${anchorDate}`} className="secondary-button">
-                  이 날짜 식단 기록·수정하기
+                <Link href={`/meals?date=${anchorDate}`} className="secondary-button inline-icon-link">
+                  <span>이 날짜 식단 기록·수정하기</span>
+                  <ArrowUpRightIcon size={14} />
                 </Link>
               </div>
             </section>
@@ -539,13 +573,13 @@ export function MealStats({ bundle, metric, target, today }: Props) {
 
           {days === 7 ? (
             (() => {
-              const svgW = 700;
-              const svgH = 250;
-              const pad = { top: 28, right: 20, bottom: 48, left: 52 };
+              const svgW = 960;
+              const svgH = 260;
+              const pad = { top: 30, right: 24, bottom: 48, left: 56 };
               const plotW = svgW - pad.left - pad.right;
               const plotH = svgH - pad.top - pad.bottom;
               const slotW = plotW / entries.length;
-              const barW = Math.min(48, slotW * 0.52);
+              const barW = Math.min(54, slotW * 0.44);
               const targetY =
                 targetValue && targetValue > 0 ? pad.top + plotH * (1 - targetValue / ceiling) : null;
 
@@ -648,9 +682,9 @@ export function MealStats({ bundle, metric, target, today }: Props) {
             })()
           ) : (
             (() => {
-              const svgW = 760;
-              const svgH = 264;
-              const pad = { top: 28, right: 20, bottom: 44, left: 52 };
+              const svgW = 960;
+              const svgH = 270;
+              const pad = { top: 30, right: 24, bottom: 46, left: 56 };
               const plotW = svgW - pad.left - pad.right;
               const plotH = svgH - pad.top - pad.bottom;
               const slotW = plotW / entries.length;
@@ -682,6 +716,12 @@ export function MealStats({ bundle, metric, target, today }: Props) {
                     role="img"
                     aria-label={`최근 30일 일별 ${label} 추이 그래프`}
                   >
+                    <defs>
+                      <linearGradient id="stats-area-grad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="var(--stat-accent)" stopOpacity="0.28" />
+                        <stop offset="100%" stopColor="var(--stat-accent)" stopOpacity="0.02" />
+                      </linearGradient>
+                    </defs>
                     {[0, 0.5, 1].map((ratio) => {
                       const y = pad.top + plotH * (1 - ratio);
                       return (

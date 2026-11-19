@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Calculator } from "@/components/Calculator";
 import { CoachBanner } from "@/components/CoachBear";
+import { TargetIcon } from "@/components/Icons";
 import { getGoalsCoachComment } from "@/lib/coachTips";
 import { goals } from "@/lib/macroCalculator";
 import { getMacroRecords } from "@/lib/macroRecords";
@@ -36,7 +37,12 @@ export default async function GoalsPage({ searchParams }: Props) {
   return (
     <main id="main" className="content-shell">
       <div className="page-heading">
-        <h1>목표 설정</h1>
+        <div className="page-heading-title">
+          <span className="page-heading-icon">
+            <TargetIcon size={20} />
+          </span>
+          <h1>목표 설정</h1>
+        </div>
         <p>신체 정보와 활동량·목표를 설정해 하루 권장 칼로리와 탄단지 비율을 계산하고 이력을 관리하세요.</p>
       </div>
 

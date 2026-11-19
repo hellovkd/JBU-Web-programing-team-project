@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { FoodRegistration } from "@/components/FoodRegistration";
+import { FoodsIcon } from "@/components/Icons";
 import { getCurrentUser } from "@/lib/session";
 import { getFavoriteFoods } from "@/lib/favoriteFoods";
 import { foodUnits, formatNumber, nutrientFields } from "@/lib/mealNutrition";
@@ -19,7 +20,12 @@ export default async function FoodsPage({ searchParams }: Props) {
     <main id="main" className="content-shell">
       {/* 상단 공통 메뉴와 역할이 겹치는 보조 링크를 없애고 음식 검색·등록에 집중합니다. */}
       <div className="page-heading">
-        <h1>내 음식</h1>
+        <div className="page-heading-title">
+          <span className="page-heading-icon">
+            <FoodsIcon size={20} />
+          </span>
+          <h1>내 음식</h1>
+        </div>
         <p>공공 식품 DB에서 제품과 브랜드를 찾아 등록하거나 직접 입력해 식단에 빠르게 추가하세요.</p>
       </div>
       {error ? <p className="notice error-notice" role="alert">{error === "input" ? "음식 이름, 기준량·단위와 영양정보를 확인해주세요." : "음식을 저장하지 못했습니다. 다시 시도해주세요."}</p> : null}

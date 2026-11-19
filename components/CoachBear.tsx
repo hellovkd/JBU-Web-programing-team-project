@@ -4,82 +4,170 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
-import { MessageCircleIcon, RefreshCwIcon, SparklesIcon, XIcon } from "@/components/Icons";
+import {
+  FlameIcon,
+  MessageCircleIcon,
+  RefreshCwIcon,
+  SparklesIcon,
+  TargetIcon,
+  XIcon,
+} from "@/components/Icons";
+import {
+  AnimatedCircularProgressBar,
+  DotPattern,
+  NumberTicker,
+  ShineBorder,
+} from "@/components/MagicPrimitives";
 import {
   COACH_TIPS,
   COACH_TIP_CATEGORIES,
   type CoachTipCategory,
 } from "@/lib/coachTips";
 
-/** 대시보드 최상단 곰 코치 브리핑 & 순환 팁 히어로 카드 */
+export type HeroCalorieSummary = {
+  consumed: number;
+  target: number;
+  remaining: number;
+  rate: number;
+  mealCount: number;
+  recordedDays7: number;
+};
+
+/** 대시보드 최상단 딥 포레스트 곰 코치 브리핑 & 달성률 히어로 스테이지 */
 export function CoachHeroCard({
   headline,
   message,
   tag,
   goalBadge,
+  calorieSummary,
 }: {
   headline: string;
   message: string;
   tag: string;
   goalBadge?: string;
+  calorieSummary?: HeroCalorieSummary;
 }) {
   const [tipIndex, setTipIndex] = useState(0);
   const tip = COACH_TIPS[tipIndex % COACH_TIPS.length];
+  const hasCalorieTarget = Boolean(calorieSummary && calorieSummary.target > 0);
+  const isOverTarget = Boolean(calorieSummary && calorieSummary.remaining < 0);
 
   return (
     <section className="coach-hero" aria-label="곰 코치의 오늘 브리핑">
-      <div className="coach-hero-visual">
-        <div className="coach-hero-stage">
-          <Image
-            src="/coach-world.webp"
-            alt="운동복을 입은 곰 코치 일러스트"
-            width={240}
-            height={288}
-            priority
-            className="coach-hero-image"
-          />
+      <DotPattern width={20} height={20} cr={1} className="coach-hero-dots" />
+      <ShineBorder
+        borderWidth={1.5}
+        duration={16}
+        shineColor={["#c8e68c", "#4aa974", "#c8e68c"]}
+      />
+
+      <div className="coach-hero-main">
+        <div className="coach-hero-visual">
+          <div className="coach-hero-stage">
+            <Image
+              src="/coach-world.webp"
+              alt="운동복을 입은 곰 코치 일러스트"
+              width={240}
+              height={288}
+              priority
+              className="coach-hero-image"
+            />
+          </div>
         </div>
+
+        <div className="coach-hero-content">
+          <div className="coach-hero-top">
+            <span className="coach-speaker-pill">
+              <SparklesIcon size={14} />
+              <span>곰 코치 오늘의 브리핑</span>
+            </span>
+            <span className="coach-tag-pill">{tag}</span>
+            {goalBadge ? <span className="coach-goal-pill">{goalBadge}</span> : null}
+          </div>
+
+          <h1 className="coach-hero-headline">{headline}</h1>
+          <p className="coach-hero-message">{message}</p>
+
+          <div className="coach-hero-actions">
+            <Link href="/meals" className="hero-cta-primary">
+              오늘 식단 기록하기
+            </Link>
+            <Link href="/goals" className="hero-cta-ghost">
+              목표 설정
+            </Link>
+          </div>
+        </div>
+
+        {calorieSummary ? (
+          hasCalorieTarget ? (
+            <div className="coach-hero-gauge" aria-label="오늘 칼로리 달성 요약">
+              <AnimatedCircularProgressBar
+                value={calorieSummary.rate}
+                max={100}
+                gaugePrimaryColor={isOverTarget ? "#f2a666" : "#c8e68c"}
+                gaugeSecondaryColor="rgba(255, 255, 255, 0.16)"
+                label="오늘 칼로리 목표 대비 달성률"
+                sublabel={isOverTarget ? "목표 초과" : "오늘 달성"}
+                className="coach-hero-ring"
+              />
+              <dl className="coach-hero-gauge-meta">
+                <div>
+                  <dt>
+                    <FlameIcon size={13} />
+                    <span>오늘 섭취</span>
+                  </dt>
+                  <dd>
+                    <NumberTicker value={calorieSummary.consumed} />{" "}
+                    <small>kcal</small>
+                  </dd>
+                </div>
+                <div>
+                  <dt>하루 목표</dt>
+                  <dd>
+                    <NumberTicker value={calorieSummary.target} />{" "}
+                    <small>kcal</small>
+                  </dd>
+                </div>
+                <div>
+                  <dt>{isOverTarget ? "초과 열량" : "남은 열량"}</dt>
+                  <dd className={isOverTarget ? "is-over" : undefined}>
+                    <NumberTicker value={Math.abs(calorieSummary.remaining)} />{" "}
+                    <small>kcal</small>
+                  </dd>
+                </div>
+              </dl>
+            </div>
+          ) : (
+            <div className="coach-hero-gauge is-empty" aria-label="목표 칼로리 미설정 안내">
+              <span className="coach-hero-gauge-icon">
+                <TargetIcon size={20} />
+              </span>
+              <strong>목표 칼로리 미설정</strong>
+              <p>신체 정보와 목표를 입력하면 오늘 달성률 게이지를 실시간으로 보여드릴게요.</p>
+              <Link href="/goals" className="hero-cta-ghost">
+                목표 계산하기
+              </Link>
+            </div>
+          )
+        ) : null}
       </div>
 
-      <div className="coach-hero-content">
-        <div className="coach-hero-top">
-          <span className="coach-speaker-pill">
-            <SparklesIcon size={14} />
-            <span>곰 코치 오늘의 브리핑</span>
-          </span>
-          <span className="coach-tag-pill">{tag}</span>
-          {goalBadge ? <span className="coach-goal-pill">{goalBadge}</span> : null}
-        </div>
-
-        <h1 className="coach-hero-headline">{headline}</h1>
-        <p className="coach-hero-message">{message}</p>
-
-        <div className="coach-hero-actions">
-          <Link href="/meals" className="primary-button">
-            오늘 식단 기록하기
-          </Link>
-          <Link href="/goals" className="secondary-button">
-            목표 설정
-          </Link>
-        </div>
-
-        <div className="coach-tip-bar" aria-live="polite">
-          <div className="coach-tip-copy">
-            <span className="coach-tip-badge">{COACH_TIP_CATEGORIES[tip.category]}</span>
-            <div>
-              <strong>{tip.title}</strong>
-              <p>{tip.body}</p>
-            </div>
+      <div className="coach-tip-bar" aria-live="polite">
+        <div className="coach-tip-copy">
+          <span className="coach-tip-badge">{COACH_TIP_CATEGORIES[tip.category]}</span>
+          <div>
+            <strong>{tip.title}</strong>
+            <p>{tip.body}</p>
           </div>
-          <button
-            type="button"
-            className="secondary-button coach-tip-next"
-            onClick={() => setTipIndex((prev) => (prev + 1) % COACH_TIPS.length)}
-          >
-            <RefreshCwIcon size={14} />
-            <span>다음 팁</span>
-          </button>
         </div>
+        <button
+          type="button"
+          className="coach-tip-next"
+          onClick={() => setTipIndex((prev) => (prev + 1) % COACH_TIPS.length)}
+        >
+          <RefreshCwIcon size={14} />
+          <span>다음 팁</span>
+        </button>
       </div>
     </section>
   );

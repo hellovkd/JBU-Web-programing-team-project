@@ -2,7 +2,16 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { FoodFields, emptyFoodFields, type FoodFieldValues } from "@/components/FoodFields";
-import { ExternalLinkIcon, SearchIcon, TagIcon, XIcon } from "@/components/Icons";
+import {
+  CarbsIcon,
+  ExternalLinkIcon,
+  FatIcon,
+  FlameIcon,
+  ProteinIcon,
+  SearchIcon,
+  TagIcon,
+  XIcon,
+} from "@/components/Icons";
 import { SubmitButton } from "@/components/SubmitButton";
 import { createFavoriteFoodAction } from "@/lib/mealActions";
 import { foodUnits, nutrientFields } from "@/lib/mealNutrition";
@@ -19,6 +28,13 @@ import {
 
 const INITIAL_RESULT_COUNT = 5;
 const INITIAL_BRAND_COUNT = 10;
+
+const SEARCH_NUTRIENT_ICONS = {
+  calories: FlameIcon,
+  carbs: CarbsIcon,
+  protein: ProteinIcon,
+  fat: FatIcon,
+} as const;
 
 type FoodSearchRequest = {
   query: string;
@@ -407,6 +423,7 @@ export function FoodRegistration({
                           title={brand.sampleNames.length ? `대표 제품: ${brand.sampleNames.join(", ")}` : brand.label}
                           aria-label={`${brand.label} 브랜드 선택 (${brand.count}건)`}
                         >
+                          {brand.isMajor ? <span className="brand-major-dot" aria-hidden="true" /> : null}
                           <span className="brand-chip-name">{brand.label}</span>
                           <span className="brand-chip-count">{brand.count}</span>
                         </button>
@@ -552,20 +569,28 @@ export function FoodRegistration({
                                 <p className="food-search-raw-maker">제조사: {food.maker}</p>
                               ) : null}
                               <dl className="food-search-nutrients">
-                                {nutrientFields.map(({ key, label, unit }) => (
-                                  <div key={key} className={key}>
-                                    <dt>{label}</dt>
-                                    <dd>
-                                      {food.nutrients[key] === null ? (
-                                        <small>미제공</small>
-                                      ) : (
-                                        <>
-                                          {food.nutrients[key]} <small>{unit}</small>
-                                        </>
-                                      )}
-                                    </dd>
-                                  </div>
-                                ))}
+                                {nutrientFields.map(({ key, label, unit }) => {
+                                  const NutrientIcon = SEARCH_NUTRIENT_ICONS[key];
+                                  return (
+                                    <div key={key} className={key}>
+                                      <dt>
+                                        <span className="food-search-nutrient-label">
+                                          <NutrientIcon size={13} />
+                                          <span>{label}</span>
+                                        </span>
+                                      </dt>
+                                      <dd>
+                                        {food.nutrients[key] === null ? (
+                                          <small>미제공</small>
+                                        ) : (
+                                          <>
+                                            {food.nutrients[key]} <small>{unit}</small>
+                                          </>
+                                        )}
+                                      </dd>
+                                    </div>
+                                  );
+                                })}
                               </dl>
                               <button
                                 type="button"
