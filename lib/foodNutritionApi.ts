@@ -1,3 +1,4 @@
+import { auth } from "@/auth";
 import {
   asObject,
   hasSearchBasis,
@@ -17,15 +18,11 @@ const CACHE_TTL = 5 * 60 * 1000;
 const CACHE_LIMIT = 100;
 const upstreamClass = { general: "품목대표", product: "상용제품" } as const;
 
-const cache = new Map<string, { expires: number; result: FoodSearchResult }>();
-const pending = new Map<string, Promise<FoodSearchResult>>();
-
-const brandCache = new Map<string, { expires: number; result: FoodBrandsResult }>();
-const brandPending = new Map<string, Promise<FoodBrandsResult>>();
-
 export class FoodSearchError extends Error {
-  constructor(public status: number, message: string) {
+  status: number;
+  constructor(status: number, message: string) {
     super(message);
+    this.status = status;
   }
 }
 
@@ -39,6 +36,40 @@ function apiKey() {
     return key;
   }
 }
+
+function createCachedLoader<T>() {
+  const cache = new Map<string, { expires: number; result: T }>();
+  const pending = new Map<string, Promise<T>>();
+
+  return async (key: string, load: () => Promise<T>): Promise<T> => {
+    apiKey();
+    const now = Date.now();
+    // 검색 결과만 짧게 메모리에 보관합니다. MongoDB와 Next.js 디스크 캐시에는 쓰지 않습니다.
+    for (const [name, entry] of cache) if (entry.expires <= now) cache.delete(name);
+    const hit = cache.get(key);
+    if (hit) {
+      cache.delete(key);
+      cache.set(key, hit);
+      return hit.result;
+    }
+    const existing = pending.get(key);
+    if (existing) return existing;
+    if (pending.size >= 10) throw new FoodSearchError(429, "검색 요청이 많습니다. 잠시 후 다시 시도해주세요.");
+
+    const task = load()
+      .then((result) => {
+        if (cache.size >= CACHE_LIMIT) cache.delete(cache.keys().next().value!);
+        cache.set(key, { expires: Date.now() + CACHE_TTL, result });
+        return result;
+      })
+      .finally(() => pending.delete(key));
+    pending.set(key, task);
+    return task;
+  };
+}
+
+const loadCachedFoods = createCachedLoader<FoodSearchResult>();
+const loadCachedBrands = createCachedLoader<FoodBrandsResult>();
 
 async function fetchUpstreamPage(params: Record<string, string>): Promise<{ rows: unknown[]; totalCount: number }> {
   const url = new URL(ENDPOINT);
@@ -124,37 +155,15 @@ async function loadFoods(
   return { foods, totalCount, page, pageSize: PAGE_SIZE };
 }
 
-export async function searchPublicFoods(
+export function searchPublicFoods(
   query: string,
   page: number,
   scope: FoodSearchScope = "all",
   maker = "",
 ) {
-  apiKey();
   const cleanMaker = maker.trim().replace(/\s+/g, " ");
   const key = JSON.stringify([query, page, scope, cleanMaker]);
-  const now = Date.now();
-  // 검색 결과만 짧게 메모리에 보관합니다. MongoDB와 Next.js 디스크 캐시에는 쓰지 않습니다.
-  for (const [name, entry] of cache) if (entry.expires <= now) cache.delete(name);
-  const hit = cache.get(key);
-  if (hit) {
-    cache.delete(key);
-    cache.set(key, hit);
-    return hit.result;
-  }
-  const existing = pending.get(key);
-  if (existing) return existing;
-  if (pending.size >= 10) throw new FoodSearchError(429, "검색 요청이 많습니다. 잠시 후 다시 시도해주세요.");
-
-  const task = loadFoods(query, page, scope, cleanMaker)
-    .then((result) => {
-      if (cache.size >= CACHE_LIMIT) cache.delete(cache.keys().next().value!);
-      cache.set(key, { expires: Date.now() + CACHE_TTL, result });
-      return result;
-    })
-    .finally(() => pending.delete(key));
-  pending.set(key, task);
-  return task;
+  return loadCachedFoods(key, () => loadFoods(query, page, scope, cleanMaker));
 }
 
 async function loadBrands(query: string): Promise<FoodBrandsResult> {
@@ -232,28 +241,29 @@ async function loadBrands(query: string): Promise<FoodBrandsResult> {
   };
 }
 
-export async function searchPublicFoodBrands(query: string): Promise<FoodBrandsResult> {
-  apiKey();
-  const key = query;
-  const now = Date.now();
-  for (const [name, entry] of brandCache) if (entry.expires <= now) brandCache.delete(name);
-  const hit = brandCache.get(key);
-  if (hit) {
-    brandCache.delete(key);
-    brandCache.set(key, hit);
-    return hit.result;
-  }
-  const existing = brandPending.get(key);
-  if (existing) return existing;
-  if (brandPending.size >= 10) throw new FoodSearchError(429, "검색 요청이 많습니다. 잠시 후 다시 시도해주세요.");
+export function searchPublicFoodBrands(query: string): Promise<FoodBrandsResult> {
+  return loadCachedBrands(query, () => loadBrands(query));
+}
 
-  const task = loadBrands(query)
-    .then((result) => {
-      if (brandCache.size >= CACHE_LIMIT) brandCache.delete(brandCache.keys().next().value!);
-      brandCache.set(key, { expires: Date.now() + CACHE_TTL, result });
-      return result;
-    })
-    .finally(() => brandPending.delete(key));
-  brandPending.set(key, task);
-  return task;
+/** 인증키를 서버에만 보관하고 로그인 사용자 검증 및 공통 오류 처리를 수행합니다. */
+export async function withFoodSearchAuth(
+  request: Request,
+  fallbackError: string,
+  run: (params: URLSearchParams, query: string) => Promise<unknown>,
+) {
+  const reply = (body: unknown, status = 200) =>
+    Response.json(body, { status, headers: { "Cache-Control": "private, no-store" } });
+  try {
+    const session = await auth();
+    if (!session?.user?.email) return reply({ error: "로그인 후 음식 검색을 이용해주세요." }, 401);
+    const params = new URL(request.url).searchParams;
+    const query = (params.get("q") ?? "").trim().replace(/\s+/g, " ");
+    if (query.length < 1 || query.length > 40) {
+      return reply({ error: "음식명은 1~40자로 입력해주세요." }, 400);
+    }
+    return reply(await run(params, query));
+  } catch (error) {
+    if (error instanceof FoodSearchError) return reply({ error: error.message }, error.status);
+    return reply({ error: fallbackError }, 500);
+  }
 }

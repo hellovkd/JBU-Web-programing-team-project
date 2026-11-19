@@ -149,3 +149,35 @@ export function ExternalLinkIcon(props: IconProps) {
     </SvgIcon>
   );
 }
+
+/** 곰 코치 말풍선 아이콘 */
+export function MessageCircleIcon(props: IconProps) {
+  return (
+    <SvgIcon {...props}>
+      <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
+    </SvgIcon>
+  );
+}
+
+/** 다음 팁 전환 아이콘 */
+export function RefreshCwIcon(props: IconProps) {
+  return (
+    <SvgIcon {...props}>
+      <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+      <path d="M21 3v5h-5" />
+      <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+      <path d="M8 16H3v5" />
+    </SvgIcon>
+  );
+}
+
+/** 목표 아이콘 */
+export function TargetIcon(props: IconProps) {
+  return (
+    <SvgIcon {...props}>
+      <circle cx="12" cy="12" r="9" />
+      <circle cx="12" cy="12" r="5" />
+      <circle cx="12" cy="12" r="1.5" fill="currentColor" />
+    </SvgIcon>
+  );
+}

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
+import { CoachBanner } from "@/components/CoachBear";
 import { loginAction } from "@/lib/actions";
 import { authenticationConfigured } from "@/lib/config";
 import { safeReturnTo } from "@/lib/authValidation";
@@ -22,7 +23,12 @@ export default async function LoginPage({ searchParams }: Props) {
     <main id="main" className="content-shell auth-shell">
       <div className="page-heading">
         <h1 id="login-heading">로그인</h1>
+        <p>오늘의 섭취량, 부족 영양소 추천, 기간별 통계까지 이어서 확인하세요.</p>
       </div>
+      <CoachBanner
+        badge="환영해요"
+        message="다시 오셨군요! 로그인하시면 오늘 목표와 식단 기록을 바로 이어서 코칭해 드릴게요."
+      />
       <section
         className="surface-panel auth-panel"
         aria-labelledby="login-heading"
@@ -34,7 +40,7 @@ export default async function LoginPage({ searchParams }: Props) {
         ) : null}
         {notice === "registered-record-retry" ? (
           <p className="notice warning-notice" role="status">
-            회원가입은 완료됐지만 첫 계산 기록을 저장하지 못했습니다. 로그인 후 계산 기록에서 다시 저장해주세요.
+            회원가입은 완료됐지만 첫 계산 기록을 저장하지 못했습니다. 로그인 후 목표 설정에서 다시 저장해주세요.
           </p>
         ) : null}
         {notice === "registered" ? (

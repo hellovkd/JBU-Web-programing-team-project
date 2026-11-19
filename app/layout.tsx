@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
+import { CoachFloatingWidget } from "@/components/CoachBear";
 import { SiteHeader } from "@/components/SiteHeader";
 import "./globals.css";
-import "./editorial.css";
 
 // 모든 페이지에 한국어 설정, 공통 헤더와 메타데이터를 적용합니다.
 export const metadata: Metadata = {
@@ -27,6 +27,7 @@ export default function RootLayout({
         <SiteHeader />
         {/* 반복되는 하단 문구를 없애고 각 페이지의 입력과 기록만 표시합니다. */}
         <div className="app-content">{children}</div>
+        <CoachFloatingWidget />
       </body>
     </html>
   );

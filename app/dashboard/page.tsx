@@ -1,140 +1,274 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Calculator } from "@/components/Calculator";
-import { getCurrentUser } from "@/lib/session";
-import { getMacroRecords } from "@/lib/macroRecords";
+import { CoachHeroCard } from "@/components/CoachBear";
+import { ChartBarIcon, TargetIcon } from "@/components/Icons";
+import { MealSuggestions } from "@/components/MealSuggestions";
+import { getDashboardCoachBriefing } from "@/lib/coachTips";
+import { getFavoriteFoods } from "@/lib/favoriteFoods";
 import { goals } from "@/lib/macroCalculator";
+import { getMacroRecords, resolveUserTarget } from "@/lib/macroRecords";
+import {
+  axisCeiling,
+  formatNumber as format,
+  formatShortDate,
+  formatWeekday,
+  getTodayDate,
+  sumNutrition,
+} from "@/lib/mealNutrition";
+import { getMealStatsBundle } from "@/lib/mealStats";
+import { getCurrentUser } from "@/lib/session";
 
-type Props = { searchParams: Promise<{ error?: string; notice?: string }> };
-export const metadata = { title: "계산 기록" };
-// 빌드 때 설정이 비어 있어도 로그인 안내를 정적 저장하지 않고 매 요청에서 세션을 확인합니다.
+export const metadata = { title: "대시보드" };
 export const dynamic = "force-dynamic";
 
-// 서버에서 사용자를 확인하고 신체 정보 수정 폼과 개인 기록 목록·상세 링크를 함께 표시합니다.
-export default async function DashboardPage({ searchParams }: Props) {
-  const { error, notice } = await searchParams;
+// 로그인 사용자의 오늘 섭취 현황, 부족 영양소 추천, 최근 7일 추이, 끼니/목표 요약을 한곳에 보여줍니다.
+export default async function DashboardPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/login?next=/dashboard");
-  const records = await getMacroRecords(user.id);
-  const latest = records[0];
-  // 가입 시 신체 정보를 기본으로 사용하고 수정 이력이 있으면 최신 기록의 조건을 사용합니다.
-  const initial = latest ?? user.bodySpec;
-  const oldest = records.at(-1);
-  const change =
-    latest && oldest && records.length > 1
-      ? Number((latest.weight - oldest.weight).toFixed(1))
+
+  const today = getTodayDate();
+  const [favorites, calculations, statsBundle] = await Promise.all([
+    getFavoriteFoods(user.id),
+    getMacroRecords(user.id),
+    getMealStatsBundle(user.id, 7, today),
+  ]);
+
+  const records = statsBundle.dayRecords;
+  const consumed = sumNutrition(records.map((record) => record.totals));
+  const { condition, target, bmr, tdee } = resolveUserTarget(calculations[0], user.bodySpec);
+
+  const goalLabel = condition ? goals[condition.goal].label : undefined;
+  const goalBadge = condition && target
+    ? `${goalLabel} · ${condition.weight}kg · ${format(target.calories)}kcal`
+    : undefined;
+
+  const recorded7 = statsBundle.entries.filter((entry) => entry.nutrients !== null);
+  const recordedCount7 = recorded7.length;
+  const totalCalories7 = recorded7.reduce((sum, entry) => sum + (entry.nutrients?.calories ?? 0), 0);
+  const avgCalories7 = recordedCount7 > 0 ? totalCalories7 / recordedCount7 : 0;
+  const highestCalories7 = recorded7.reduce(
+    (max, entry) => Math.max(max, entry.nutrients?.calories ?? 0),
+    0,
+  );
+  const chartCeiling = axisCeiling(Math.max(highestCalories7, target?.calories ?? 0), 1000);
+
+  const briefing = getDashboardCoachBriefing({
+    userName: user.name,
+    consumed,
+    target,
+    mealCount: records.length,
+    recordedDays7: recordedCount7,
+    goalLabel,
+  });
+
+  // 7일 미니 막대 그래프 좌표 계산
+  const svgW = 460;
+  const svgH = 175;
+  const pad = { top: 20, right: 12, bottom: 38, left: 46 };
+  const plotW = svgW - pad.left - pad.right;
+  const plotH = svgH - pad.top - pad.bottom;
+  const slotW = plotW / statsBundle.entries.length;
+  const barW = Math.min(34, slotW * 0.56);
+  const targetLineY =
+    target && target.calories > 0
+      ? pad.top + plotH * (1 - target.calories / chartCeiling)
       : null;
+
   return (
-    <main id="main" className="content-shell">
-      <div className="page-heading">
-        <h1>계산 기록</h1>
-      </div>
-      {notice === "updated" ? (
-        <p className="notice info-notice" role="status">
-          신체 정보와 목표를 수정해 다시 계산했습니다.
-        </p>
-      ) : null}
-      {/* 계정은 생성됐지만 최초 계산 기록 저장이 실패한 경우 재저장을 안내합니다. */}
-      {notice === "record-retry" ? (
-        <p className="notice warning-notice" role="status">
-          회원가입은 완료됐지만 첫 계산 기록을 저장하지 못했습니다. 아래 정보를 확인하고 다시 저장해주세요.
-        </p>
-      ) : null}
-      {error ? (
-        <p className="notice error-notice" role="alert">
-          {error === "save"
-            ? "기록을 저장하지 못했습니다. 연결 상태를 확인하고 다시 시도해주세요."
-            : error === "infeasible"
-              ? "입력한 조건에서는 탄단지 배분을 계산할 수 없습니다. 체중과 목표를 다시 확인해주세요."
-              : "입력값과 목표를 확인한 뒤 다시 저장해주세요."}
-        </p>
-      ) : null}
-      <Calculator initial={initial} />
-      <p className="form-note">성인용 추정값이며 실제 필요량과 다를 수 있습니다.</p>
-      <dl className="dashboard-summary surface-panel">
-        <div>
-          <dt>최근 저장 체중</dt>
-          <dd>
-            {latest ? latest.weight : "—"}
-            <span>kg</span>
-          </dd>
-        </div>
-        <div>
-          <dt>최근 목표 칼로리</dt>
-          <dd>
-            {latest ? latest.targetCalories.toLocaleString("ko-KR") : "—"}
-            <span>kcal</span>
-          </dd>
-          {latest ? <p>{goals[latest.goal].label}</p> : null}
-        </div>
-        <div>
-          <dt>표시 기간 체중 변화</dt>
-          <dd>
-            {change === null ? "—" : `${change > 0 ? "+" : ""}${change}`}
-            <span>kg</span>
-          </dd>
-          <p>
-            {records.length > 1
-              ? `표시된 ${records.length}개 기록의 처음과 최근 비교`
-              : "기록 2개부터 비교합니다"}
-          </p>
-        </div>
-      </dl>
-      {/* 날짜와 모든 수치를 같은 행에서 비교하도록 카드 대신 표를 쓰며 조회·상세 이동은 유지합니다. */}
-      <section className="records-section" aria-labelledby="records-heading">
-        <div className="section-heading">
-          <h2 id="records-heading">저장한 계산</h2>
-          <span>최근 100개 중 {records.length}개</span>
-        </div>
-        {records.length ? (
-          <div className="record-table-scroll" tabIndex={0} role="region" aria-label="저장한 계산 기록 표">
-          <table className="record-table">
-            <thead>
-              <tr>
-                <th scope="col">저장일</th>
-                <th scope="col">목표</th>
-                <th scope="col">체중 (kg)</th>
-                <th scope="col">목표 칼로리 (kcal)</th>
-                <th scope="col">탄수화물 (g)</th>
-                <th scope="col">단백질 (g)</th>
-                <th scope="col">지방 (g)</th>
-                <th scope="col">상세</th>
-              </tr>
-            </thead>
-            <tbody>
-              {records.map((record) => (
-                <tr key={record.id}>
-                  <td>
-                    <time dateTime={record.createdAt}>
-                      {new Date(record.createdAt).toLocaleString("ko-KR", {
-                        timeZone: "Asia/Seoul",
-                        dateStyle: "medium",
-                        timeStyle: "short",
-                      })}
-                    </time>
-                  </td>
-                  <td>{goals[record.goal].label}</td>
-                  <td>{record.weight}</td>
-                  <td>{record.targetCalories.toLocaleString("ko-KR")}</td>
-                  <td>{record.carbs}</td>
-                  <td>{record.protein}</td>
-                  <td>{record.fat}</td>
-                  <td>
-                    <Link className="text-link" href={`/dashboard/${record.id}`}>
-                      보기
+    <main id="main" className="content-shell dashboard-shell">
+      <CoachHeroCard
+        headline={briefing.headline}
+        message={briefing.message}
+        tag={briefing.tag}
+        goalBadge={goalBadge}
+      />
+
+      <MealSuggestions
+        date={today}
+        target={target}
+        consumed={consumed}
+        favorites={favorites}
+        hasMealRecords={records.length > 0}
+        showCoachBanner={false}
+      />
+
+      <div className="dashboard-bento">
+        <section className="dashboard-card" aria-labelledby="dashboard-weekly-heading">
+          <div className="dashboard-card-head">
+            <div className="dashboard-card-title">
+              <ChartBarIcon size={18} />
+              <h2 id="dashboard-weekly-heading">최근 7일 칼로리 추이</h2>
+            </div>
+            <Link href="/meals/stats?days=7" className="text-link">
+              통계 전체 보기
+            </Link>
+          </div>
+
+          <dl className="dashboard-mini-kpis">
+            <div>
+              <dt>기록한 날</dt>
+              <dd>{recordedCount7} / 7일</dd>
+            </div>
+            <div>
+              <dt>7일 평균</dt>
+              <dd>{recordedCount7 > 0 ? `${format(avgCalories7)} kcal` : "—"}</dd>
+            </div>
+            <div>
+              <dt>목표 칼로리</dt>
+              <dd>{target ? `${format(target.calories)} kcal` : "미설정"}</dd>
+            </div>
+          </dl>
+
+          {recordedCount7 > 0 ? (
+            <div className="dashboard-mini-chart-wrap">
+              <svg
+                viewBox={`0 0 ${svgW} ${svgH}`}
+                className="dashboard-mini-svg"
+                role="img"
+                aria-label="최근 7일 일별 칼로리 섭취량 미니 그래프"
+              >
+                {[0, 0.5, 1].map((ratio) => {
+                  const y = pad.top + plotH * (1 - ratio);
+                  return (
+                    <g key={ratio}>
+                      <line x1={pad.left} y1={y} x2={svgW - pad.right} y2={y} className="stats-gridline" />
+                      <text x={pad.left - 8} y={y + 4} textAnchor="end" className="stats-axis-text">
+                        {format(chartCeiling * ratio)}
+                      </text>
+                    </g>
+                  );
+                })}
+                {targetLineY !== null ? (
+                  <line
+                    x1={pad.left}
+                    y1={targetLineY}
+                    x2={svgW - pad.right}
+                    y2={targetLineY}
+                    className="stats-target-line"
+                  />
+                ) : null}
+                {statsBundle.entries.map((entry, idx) => {
+                  const cal = entry.nutrients?.calories ?? null;
+                  const barH = cal !== null ? Math.max(cal > 0 ? 4 : 2, (cal / chartCeiling) * plotH) : 0;
+                  const x = pad.left + idx * slotW + (slotW - barW) / 2;
+                  const y = pad.top + plotH - barH;
+                  const isToday = entry.date === today;
+                  return (
+                    <Link
+                      key={entry.date}
+                      href={`/meals?date=${entry.date}`}
+                      aria-label={`${entry.date} ${cal !== null ? `${format(cal)} kcal` : "미기록"} 식단 보기`}
+                    >
+                      <g className={`dashboard-mini-bar-group${isToday ? " is-today" : ""}`}>
+                        <rect
+                          x={pad.left + idx * slotW + 2}
+                          y={pad.top}
+                          width={slotW - 4}
+                          height={plotH}
+                          rx={6}
+                          className="stats-hit-bg"
+                        />
+                        {cal !== null ? (
+                          <rect x={x} y={y} width={barW} height={barH} rx={5} className="dashboard-mini-bar" />
+                        ) : (
+                          <rect
+                            x={x}
+                            y={pad.top + plotH - 8}
+                            width={barW}
+                            height={8}
+                            rx={3}
+                            className="stats-svg-unrecorded"
+                          />
+                        )}
+                        <text x={x + barW / 2} y={svgH - 18} textAnchor="middle" className="stats-axis-label">
+                          {formatShortDate(entry.date)}
+                        </text>
+                        <text x={x + barW / 2} y={svgH - 4} textAnchor="middle" className="stats-axis-sub">
+                          {isToday ? "오늘" : formatWeekday(entry.date)}
+                        </text>
+                      </g>
                     </Link>
-                  </td>
-                </tr>
+                  );
+                })}
+              </svg>
+              <p className="dashboard-chart-hint">날짜 막대를 누르면 해당 날짜의 식단 기록으로 바로 이동해요.</p>
+            </div>
+          ) : (
+            <div className="dashboard-empty-mini">
+              <p>최근 7일 동안 기록된 식단이 없습니다. 오늘 식사를 기록하면 추이 그래프가 그려집니다.</p>
+              <Link href="/meals" className="secondary-button">
+                첫 식단 기록하기
+              </Link>
+            </div>
+          )}
+        </section>
+
+        <div className="dashboard-side-stack">
+          <section className="dashboard-card" aria-labelledby="dashboard-meals-heading">
+            <div className="dashboard-card-head">
+              <h2 id="dashboard-meals-heading">오늘 끼니별 현황</h2>
+              <span className="dashboard-muted-count">음식 {records.length}개</span>
+            </div>
+            <ul className="dashboard-meal-list" role="list">
+              {statsBundle.dayBreakdown.map((item) => (
+                <li key={item.mealType}>
+                  <Link href={`/meals?date=${today}#meal-group-${item.mealType}`} className="dashboard-meal-item">
+                    <div>
+                      <strong>{item.label}</strong>
+                      <span>{item.count > 0 ? `${item.count}개 음식` : "미기록"}</span>
+                    </div>
+                    <span className="dashboard-meal-kcal">
+                      {item.count > 0 ? `${format(item.nutrients.calories)} kcal` : "추가하기"}
+                    </span>
+                  </Link>
+                </li>
               ))}
-            </tbody>
-          </table>
-          </div>
-        ) : (
-          <div className="empty-state surface-panel">
-            <p>저장한 계산 기록이 없습니다.</p>
-          </div>
-        )}
-      </section>
+            </ul>
+          </section>
+
+          <section className="dashboard-card" aria-labelledby="dashboard-goals-heading">
+            <div className="dashboard-card-head">
+              <div className="dashboard-card-title">
+                <TargetIcon size={18} />
+                <h2 id="dashboard-goals-heading">내 대사량 · 목표 기준</h2>
+              </div>
+              <Link href="/goals" className="text-link">
+                변경·이력
+              </Link>
+            </div>
+            {condition && target ? (
+              <dl className="dashboard-metabolic-dl">
+                <div>
+                  <dt>기초대사량 (BMR)</dt>
+                  <dd>{bmr ? `${format(bmr)} kcal` : "—"}</dd>
+                </div>
+                <div>
+                  <dt>일일 소비량 (TDEE)</dt>
+                  <dd>{tdee ? `${format(tdee)} kcal` : "—"}</dd>
+                </div>
+                <div>
+                  <dt>하루 목표 칼로리</dt>
+                  <dd>{format(target.calories)} kcal</dd>
+                </div>
+                <div>
+                  <dt>최근 저장 체중</dt>
+                  <dd>{condition.weight} kg</dd>
+                </div>
+              </dl>
+            ) : (
+              <p className="dashboard-empty-text">
+                아직 목표가 설정되지 않았습니다. <Link href="/goals" className="text-link">목표 설정</Link>에서 신체 정보를 입력해 주세요.
+              </p>
+            )}
+            <div className="dashboard-card-foot">
+              <span>저장한 내 음식 {favorites.length}개</span>
+              <Link href="/foods" className="text-link">
+                음식 검색·관리
+              </Link>
+            </div>
+          </section>
+        </div>
+      </div>
     </main>
   );
 }

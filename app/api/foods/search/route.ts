@@ -1,34 +1,27 @@
-import { auth } from "@/auth";
-import { FoodSearchError, searchPublicFoods } from "@/lib/foodNutritionApi";
+import { FoodSearchError, searchPublicFoods, withFoodSearchAuth } from "@/lib/foodNutritionApi";
 
 export const runtime = "nodejs";
 
 // 인증키를 서버에 보관하고 로그인한 사용자의 명시적인 검색만 중계합니다.
 export async function GET(request: Request) {
-  const reply = (body: unknown, status = 200) =>
-    Response.json(body, { status, headers: { "Cache-Control": "private, no-store" } });
-  try {
-    const session = await auth();
-    if (!session?.user?.email) return reply({ error: "로그인 후 음식 검색을 이용해주세요." }, 401);
-    const params = new URL(request.url).searchParams;
-    const query = (params.get("q") ?? "").trim().replace(/\s+/g, " ");
-    const pageText = params.get("page") ?? "1";
-    const page = Number(pageText);
-    const scope = params.get("scope") ?? "all";
-    const maker = (params.get("maker") ?? "").trim().replace(/\s+/g, " ");
-    // 한 글자 음식명도 공공 API에서 검색할 수 있습니다.
-    if (query.length < 1 || query.length > 40 || !/^\d{1,3}$/.test(pageText) || !Number.isInteger(page) || page < 1 || page > 100) {
-      return reply({ error: "음식명은 1~40자로, 검색 페이지는 1~100으로 입력해주세요." }, 400);
-    }
-    if (scope !== "all" && scope !== "general" && scope !== "product") {
-      return reply({ error: "검색 범위를 다시 선택해주세요." }, 400);
-    }
-    if (maker.length > 60) {
-      return reply({ error: "브랜드명은 60자 이하로 입력해주세요." }, 400);
-    }
-    return reply(await searchPublicFoods(query, page, scope, maker));
-  } catch (error) {
-    if (error instanceof FoodSearchError) return reply({ error: error.message }, error.status);
-    return reply({ error: "음식 검색을 처리하지 못했습니다. 잠시 후 다시 시도해주세요." }, 500);
-  }
+  return withFoodSearchAuth(
+    request,
+    "음식 검색을 처리하지 못했습니다. 잠시 후 다시 시도해주세요.",
+    (params, query) => {
+      const pageText = params.get("page") ?? "1";
+      const page = Number(pageText);
+      const scope = params.get("scope") ?? "all";
+      const maker = (params.get("maker") ?? "").trim().replace(/\s+/g, " ");
+      if (!/^\d{1,3}$/.test(pageText) || !Number.isInteger(page) || page < 1 || page > 100) {
+        throw new FoodSearchError(400, "음식명은 1~40자로, 검색 페이지는 1~100으로 입력해주세요.");
+      }
+      if (scope !== "all" && scope !== "general" && scope !== "product") {
+        throw new FoodSearchError(400, "검색 범위를 다시 선택해주세요.");
+      }
+      if (maker.length > 60) {
+        throw new FoodSearchError(400, "브랜드명은 60자 이하로 입력해주세요.");
+      }
+      return searchPublicFoods(query, page, scope, maker);
+    },
+  );
 }

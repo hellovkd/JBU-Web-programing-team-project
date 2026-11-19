@@ -9,30 +9,49 @@ import type { SavedFavoriteFood } from "@/lib/favoriteFoods";
 import {
   calculateMealNutrition,
   foodUnits,
+  formatNumber,
   mealTypes,
   validateMealInput,
   type MealInput,
 } from "@/lib/mealNutrition";
 
+function toFieldValues(food: SavedFavoriteFood | undefined): FoodFieldValues {
+  if (!food) return emptyFoodFields;
+  return {
+    name: food.name,
+    baseAmount: String(food.baseAmount),
+    unit: food.unit,
+    calories: String(food.nutrients.calories),
+    carbs: String(food.nutrients.carbs),
+    protein: String(food.nutrients.protein),
+    fat: String(food.nutrients.fat),
+  };
+}
+
 // useState로 저장한 음식을 입력란에 채우며 실제 저장은 Server Action에서 처리합니다.
-export function MealForm({ date, favorites }: { date: string; favorites: SavedFavoriteFood[] }) {
-  const [fields, setFields] = useState<FoodFieldValues>(emptyFoodFields);
-  const [amount, setAmount] = useState("100");
+export function MealForm({
+  date,
+  favorites,
+  initialFavoriteId = "",
+  initialAmount,
+}: {
+  date: string;
+  favorites: SavedFavoriteFood[];
+  initialFavoriteId?: string;
+  initialAmount?: string;
+}) {
+  const initialFood = initialFavoriteId ? favorites.find((item) => item.id === initialFavoriteId) : undefined;
+  const [fields, setFields] = useState<FoodFieldValues>(() => toFieldValues(initialFood));
+  const [amount, setAmount] = useState(() =>
+    initialFood ? initialAmount ?? String(initialFood.baseAmount) : "100",
+  );
   const [mealType, setMealType] = useState<MealInput["mealType"]>("breakfast");
-  const [favoriteId, setFavoriteId] = useState("");
+  const [favoriteId, setFavoriteId] = useState(initialFood ? initialFood.id : "");
 
   function selectFavorite(id: string) {
     setFavoriteId(id);
     const food = favorites.find((item) => item.id === id);
-    setFields(food ? {
-      name: food.name,
-      baseAmount: String(food.baseAmount),
-      unit: food.unit,
-      calories: String(food.nutrients.calories),
-      carbs: String(food.nutrients.carbs),
-      protein: String(food.nutrients.protein),
-      fat: String(food.nutrients.fat),
-    } : emptyFoodFields);
+    setFields(toFieldValues(food));
     // 음식마다 1개·200mL 등 기준이 다르므로 불러올 때 먹은 양도 그 기준량으로 맞춥니다.
     setAmount(food ? String(food.baseAmount) : "100");
   }
@@ -53,12 +72,16 @@ export function MealForm({ date, favorites }: { date: string; favorites: SavedFa
   };
   // 미리보기와 저장이 같은 순수 함수를 사용하고, 실제 DB 저장 때 서버가 다시 검증·계산합니다.
   const preview = validateMealInput(input) ? undefined : calculateMealNutrition(input);
-  const display = (value: number) => value.toLocaleString("ko-KR", { maximumFractionDigits: 1 });
 
   return (
     <section className="surface-panel meal-form-panel" aria-labelledby="meal-form-heading">
       {/* 날짜는 페이지 필터에서 보여주므로 이 폼은 기록 입력에 필요한 제목만 둡니다. */}
       <div className="panel-header"><h2 id="meal-form-heading">음식 기록</h2></div>
+      {initialFood ? (
+        <p className="notice info-notice" role="status">
+          추천한 음식({initialFood.name})을 입력란에 채웠어요. 끼니를 고르고 저장하세요.
+        </p>
+      ) : null}
       <form action={createMealAction} className="meal-form">
         <input type="hidden" name="date" value={date} />
         {/* 음식 등록은 「내 음식」 화면에서만 하고, 여기서는 저장한 음식을 선택해 먹은 양만 입력합니다. */}
@@ -103,10 +126,10 @@ export function MealForm({ date, favorites }: { date: string; favorites: SavedFa
           <p>섭취 영양정보</p>
           {preview ? (
             <dl className="meal-preview-values">
-              <div><dt>칼로리</dt><dd>{display(preview.calories)} <span>kcal</span></dd></div>
-              <div><dt>탄수화물</dt><dd>{display(preview.carbs)} <span>g</span></dd></div>
-              <div><dt>단백질</dt><dd>{display(preview.protein)} <span>g</span></dd></div>
-              <div><dt>지방</dt><dd>{display(preview.fat)} <span>g</span></dd></div>
+              <div><dt>칼로리</dt><dd>{formatNumber(preview.calories)} <span>kcal</span></dd></div>
+              <div><dt>탄수화물</dt><dd>{formatNumber(preview.carbs)} <span>g</span></dd></div>
+              <div><dt>단백질</dt><dd>{formatNumber(preview.protein)} <span>g</span></dd></div>
+              <div><dt>지방</dt><dd>{formatNumber(preview.fat)} <span>g</span></dd></div>
             </dl>
           ) : <p className="field-hint">음식과 먹은 양을 입력하면 표시됩니다.</p>}
         </div>

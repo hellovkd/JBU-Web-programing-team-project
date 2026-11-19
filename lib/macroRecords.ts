@@ -2,7 +2,7 @@ import { connectDB } from "@/lib/mongodb";
 import { MacroRecord as MacroRecordModel } from "@/models/MacroRecord";
 import { calculateMacros, type MacroInput } from "@/lib/macroCalculator";
 
-export type SavedMacroRecord = MacroInput & {
+type SavedMacroRecord = MacroInput & {
   id: string;
   bmr: number;
   tdee: number;
@@ -78,4 +78,37 @@ export async function createMacroRecord(userId: string, input: MacroInput) {
     fat: result.fat,
   });
   return toRecord(doc as unknown as RecordDocument);
+}
+
+/** 최신 계산 기록 또는 가입 시 신체 정보로부터 대사량과 하루 목표 영양소를 안전하게 구합니다. */
+export function resolveUserTarget(
+  latest: SavedMacroRecord | undefined,
+  fallback?: MacroInput,
+): {
+  condition?: MacroInput;
+  target?: { calories: number; carbs: number; protein: number; fat: number };
+  bmr?: number;
+  tdee?: number;
+} {
+  const condition = latest ?? fallback;
+  if (!condition) return {};
+  try {
+    const result = calculateMacros(condition);
+    const bmr = latest?.bmr ?? result.bmr;
+    const tdee = latest?.tdee ?? result.tdee;
+    if (!result.isFeasible) return { condition, bmr, tdee };
+    return {
+      condition,
+      bmr,
+      tdee,
+      target: {
+        calories: latest?.targetCalories ?? result.targetCalories,
+        carbs: latest?.carbs ?? result.carbs,
+        protein: latest?.protein ?? result.protein,
+        fat: latest?.fat ?? result.fat,
+      },
+    };
+  } catch {
+    return { condition };
+  }
 }

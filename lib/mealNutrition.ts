@@ -61,6 +61,14 @@ export function getPreviousMealDate(date: string) {
   return previous.toISOString().slice(0, 10);
 }
 
+// 확정된 한국 날짜에서 하루를 더해 2100-12-31 범위 내에서 다음 날을 구합니다.
+export function getNextMealDate(date: string) {
+  if (!isValidMealDate(date)) throw new Error("다음 날짜를 계산할 기준일이 올바르지 않습니다.");
+  const next = new Date(new Date(`${date}T00:00:00.000Z`).getTime() + 24 * 60 * 60 * 1000);
+  const formatted = next.toISOString().slice(0, 10);
+  return isValidMealDate(formatted) ? formatted : date;
+}
+
 export function readFoodInput(data: Pick<FormData, "get">): FoodInput {
   const text = (name: string) => {
     const value = data.get(name);
@@ -165,4 +173,39 @@ export function remainingNutrition(target: Nutrients, consumed: Nutrients): Nutr
     protein: roundDisplay(target.protein - consumed.protein),
     fat: roundDisplay(target.fat - consumed.fat),
   };
+}
+
+const koNumberFormat = new Intl.NumberFormat("ko-KR", { maximumFractionDigits: 1 });
+
+/** 모든 식단·통계·대시보드 화면에서 소수 첫째 자리까지 한국어 숫자로 표기합니다. */
+export function formatNumber(value: number) {
+  return koNumberFormat.format(value);
+}
+
+/** 그래프의 최댓값과 목표선을 모두 담을 수 있는 눈금 상한(1·2·5×10^n)을 구합니다. */
+export function axisCeiling(maximum: number, fallback = 1) {
+  if (maximum < 1) return fallback;
+  const magnitude = 10 ** Math.floor(Math.log10(maximum));
+  const leading = maximum / magnitude;
+  const step = leading <= 1 ? 1 : leading <= 2 ? 2 : leading <= 5 ? 5 : 10;
+  return step * magnitude;
+}
+
+/** YYYY-MM-DD 날짜 문자열을 "M/D" 형식으로 변환합니다. */
+export function formatShortDate(date: string) {
+  const [, month, day] = date.split("-").map(Number);
+  return `${month}/${day}`;
+}
+
+/** YYYY-MM-DD 달력 날짜의 한국어 짧은 요일("월"~"일")을 반환합니다. */
+export function formatWeekday(date: string) {
+  return new Intl.DateTimeFormat("ko-KR", { timeZone: "UTC", weekday: "short" }).format(
+    new Date(`${date}T00:00:00.000Z`),
+  );
+}
+
+/** YYYY-MM-DD 날짜 문자열을 "YYYY년 M월 D일 (요일)" 형식으로 변환합니다. */
+export function formatFullDate(date: string) {
+  const [year, month, day] = date.split("-").map(Number);
+  return `${year}년 ${month}월 ${day}일 (${formatWeekday(date)})`;
 }

@@ -3,8 +3,8 @@ export default function Loading() {
   return (
     <main id="main" className="content-shell" aria-busy="true">
       <div className="page-heading">
-        <h1>계산 기록</h1>
-        <p role="status">저장한 계산을 불러오는 중입니다…</p>
+        <h1>대시보드</h1>
+        <p role="status">오늘의 요약 정보를 불러오는 중입니다…</p>
       </div>
     </main>
   );

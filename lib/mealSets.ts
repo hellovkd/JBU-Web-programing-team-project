@@ -5,7 +5,7 @@ import { MealSet } from "@/models/MealSet";
 import { MealRecord } from "@/models/MealRecord";
 
 export type MealSetScope = "day" | MealInput["mealType"];
-export type MealSetItem = Omit<MealInput, "date">;
+type MealSetItem = Omit<MealInput, "date">;
 export type SavedMealSet = { id: string; name: string; scope: MealSetScope; items: MealSetItem[] };
 export class MealSetError extends Error {
   constructor(public code: string) { super(code); }

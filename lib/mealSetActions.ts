@@ -34,6 +34,7 @@ export async function applyMealSetAction(form: FormData) {
   if (!isValidMealDate(text(form, "date"))) redirect(`/meals?date=${date}&error=set-input`);
   try { await applyMealSet(user.id, text(form, "setId"), date, text(form, "mealType")); } catch (error) { failure(error, date); }
   revalidatePath("/meals");
+  revalidatePath("/meals/stats");
   redirect(`/meals?date=${date}&notice=set-applied`);
 }
 

@@ -17,8 +17,16 @@ export function validPassword(password: unknown): password is string {
 }
 
 // 허용된 내부 페이지로만 이동시켜 로그인 후 외부 사이트로 보내는 조작을 차단합니다.
-export function safeReturnTo(value: unknown): "/" | "/dashboard" | "/meals" | "/foods" {
-  // 식단·내 음식에서 로그인해도 원래 페이지로 돌아오도록 허용 경로만 추가합니다.
-  if (value === "/" || value === "/meals" || value === "/foods") return value;
+export function safeReturnTo(value: unknown): "/" | "/dashboard" | "/meals" | "/meals/stats" | "/foods" | "/goals" {
+  // 보호된 페이지에서 로그인해도 원래 경로로 돌아오도록 허용된 내부 경로만 통과시킵니다.
+  if (
+    value === "/" ||
+    value === "/meals" ||
+    value === "/meals/stats" ||
+    value === "/foods" ||
+    value === "/goals"
+  ) {
+    return value;
+  }
   return "/dashboard";
 }

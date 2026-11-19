@@ -30,6 +30,7 @@ export async function createMealAction(formData: FormData) {
   }
   // 저장 후 목록을 재검증하고 이동해 일일 합계에 새 식사를 반영합니다.
   revalidatePath("/meals");
+  revalidatePath("/meals/stats");
   redirect(`/meals?date=${date}&notice=saved`);
 }
 

@@ -13,10 +13,6 @@ declare global {
 const cached = global.nutritionMongooseCache ?? { conn: null, promise: null };
 global.nutritionMongooseCache = cached;
 
-export function isDatabaseConfigured() {
-  return Boolean(process.env.MONGODB_URI?.trim());
-}
-
 export async function connectDB() {
   const uri = process.env.MONGODB_URI?.trim();
   if (!uri) throw new Error("팀 프로젝트의 MONGODB_URI를 설정해주세요.");

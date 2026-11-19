@@ -26,12 +26,12 @@ export async function saveMacroRecordAction(formData: FormData) {
   try {
     user = await getCurrentUser();
   } catch {
-    redirect("/dashboard?error=save");
+    redirect("/goals?error=save");
   }
-  if (!user) redirect("/login?notice=auth&next=/dashboard");
+  if (!user) redirect("/login?notice=auth&next=/goals");
   const input = readMacroInput(formData);
-  if (Object.keys(validateMacroInput(input)).length) redirect("/dashboard?error=input");
-  if (!calculateMacros(input).isFeasible) redirect("/dashboard?error=infeasible");
+  if (Object.keys(validateMacroInput(input)).length) redirect("/goals?error=input");
+  if (!calculateMacros(input).isFeasible) redirect("/goals?error=infeasible");
   try {
     await createMacroRecord(user.id, input);
   } catch (error) {
@@ -39,13 +39,15 @@ export async function saveMacroRecordAction(formData: FormData) {
       "기록 저장 실패:",
       error instanceof Error ? error.name : "UnknownError",
     );
-    redirect("/dashboard?error=save");
+    redirect("/goals?error=save");
   }
-  // 수정된 입력과 재계산 결과가 홈, 계산 기록, 식단 기록의 목표치에 즉시 반영되도록 재검증합니다.
+  // 수정된 입력과 재계산 결과가 홈, 대시보드, 목표 설정, 식단·통계 목표치에 즉시 반영되도록 재검증합니다.
   revalidatePath("/");
   revalidatePath("/dashboard");
+  revalidatePath("/goals");
   revalidatePath("/meals");
-  redirect("/dashboard?notice=updated");
+  revalidatePath("/meals/stats");
+  redirect("/goals?notice=updated");
 }
 
 export async function registerAction(formData: FormData) {
@@ -84,7 +86,7 @@ export async function registerAction(formData: FormData) {
     console.error("초기 계산 기록 저장 실패:", error instanceof Error ? error.name : "UnknownError");
   }
   try {
-    await signIn("credentials", { email, password, redirectTo: initialRecordSaved ? "/dashboard" : "/dashboard?notice=record-retry" });
+    await signIn("credentials", { email, password, redirectTo: initialRecordSaved ? "/dashboard" : "/goals?notice=record-retry" });
   } catch (error) {
     if (error instanceof AuthError) redirect(initialRecordSaved ? "/login?notice=registered" : "/login?notice=registered-record-retry");
     throw error;

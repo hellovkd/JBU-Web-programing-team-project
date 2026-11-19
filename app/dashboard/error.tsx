@@ -7,16 +7,16 @@ export default function DashboardError({ retry }: { retry: () => void }) {
   return (
     <main id="main" className="content-shell">
       <div className="page-heading">
-        <h1>계산 기록</h1>
+        <h1>대시보드</h1>
       </div>
       <section className="surface-panel empty-state">
-        <h2>기록을 불러오지 못했습니다.</h2>
+        <h2>대시보드 정보를 불러오지 못했습니다.</h2>
         <p>연결 상태를 확인한 뒤 다시 시도해주세요.</p>
         <button className="secondary-button" onClick={retry}>
           다시 시도하기
         </button>
-        <Link href="/" className="text-link">
-          계산기로 돌아가기
+        <Link href="/meals" className="text-link">
+          식단 기록으로 이동
         </Link>
       </section>
     </main>
