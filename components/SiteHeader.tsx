@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { auth } from "@/auth";
+import { NavLinks } from "@/components/NavLinks";
 import { logoutAction } from "@/lib/actions";
 import { authenticationConfigured } from "@/lib/config";
 
@@ -16,11 +17,7 @@ export async function SiteHeader() {
           <span>탄단지</span>
         </Link>
         {/* 기록 메뉴와 계정 메뉴를 묶어 화면 너비에 맞춰 줄을 바꿉니다. */}
-        <nav className="header-navigation" aria-label="기록 메뉴">
-          <Link href="/dashboard">계산 기록</Link>
-          <Link href="/meals">식단 기록</Link>
-          <Link href="/foods">내 음식</Link>
-        </nav>
+        <NavLinks />
         <nav className="header-account" aria-label="계정 메뉴">
           {session?.user ? (
             <>
