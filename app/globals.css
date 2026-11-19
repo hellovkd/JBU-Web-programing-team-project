@@ -22,8 +22,8 @@
 * { box-sizing: border-box; }
 body {
   margin: 0;
-  /* 데스크톱 화면의 최소 너비를 유지해 입력과 결과의 두 열이 겹치지 않게 합니다. */
-  min-width: 1000px;
+  /* 좁은 화면에서도 문서 전체가 가로로 밀리지 않도록 최소 너비를 제한합니다. */
+  min-width: 0;
   background: var(--ground);
   color: var(--ink);
   font: 14px/1.5 var(--font);
@@ -73,7 +73,6 @@ input[type="radio"] {
 }
 .brand { font-size: 20px; font-weight: 600; }
 .header-navigation { display: flex; align-items: center; gap: 22px; }
-.header-navigation form { margin: 0; }
 .account-name { max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); }
 .app-content { padding: 0 24px; }
 .content-shell { max-width: 1000px; margin: auto; padding: 28px 0 40px; }
@@ -99,7 +98,7 @@ h2, h3 { line-height: 1.5; }
   align-items: start;
   gap: 32px;
 }
-.results-panel, .registration-body, .detail-grid > .results-panel, .meal-records, .food-list-section {
+.results-panel, .detail-grid > .results-panel, .meal-records, .food-list-section {
   border-left: 1px solid var(--line);
   padding-left: 28px;
 }

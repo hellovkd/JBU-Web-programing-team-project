@@ -12,14 +12,16 @@ export async function SiteHeader() {
       <div className="header-inner">
         {/* 로그인 상태에서는 식단 기록으로, 비로그인 상태에서는 처음 안내 페이지(/)로 이동합니다. */}
         <Link className="brand" href={session?.user ? "/meals" : "/"}>
-          <span className="brand-symbol" aria-hidden="true">탄</span>
+          <span className="brand-symbol" aria-hidden="true" />
           <span>탄단지</span>
         </Link>
-        <nav className="header-navigation" aria-label="주 메뉴">
+        {/* 기록 메뉴와 계정 메뉴를 묶어 화면 너비에 맞춰 줄을 바꿉니다. */}
+        <nav className="header-navigation" aria-label="기록 메뉴">
           <Link href="/dashboard">계산 기록</Link>
-          {/* 수업 헤더와 같은 일반 링크로 음식 등록과 끼니별 기록 화면을 연결합니다. */}
           <Link href="/meals">식단 기록</Link>
           <Link href="/foods">내 음식</Link>
+        </nav>
+        <nav className="header-account" aria-label="계정 메뉴">
           {session?.user ? (
             <>
               <span className="account-name">{session.user.name}님</span>

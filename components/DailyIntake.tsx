@@ -1,4 +1,4 @@
-import { remainingNutrition, type Nutrients } from "@/lib/mealNutrition";
+import { nutrientFields, remainingNutrition, type Nutrients } from "@/lib/mealNutrition";
 
 // 목표와 섭취량의 차이를 그대로 표시해 초과한 영양소를 남은 양 0으로 숨기지 않습니다.
 export function DailyIntake({ target, consumed }: { target?: Nutrients; consumed: Nutrients }) {
@@ -9,18 +9,14 @@ export function DailyIntake({ target, consumed }: { target?: Nutrients; consumed
       {/* 계산기 이동은 공통 메뉴에 맡기고 이 영역에는 섭취량 비교만 표시합니다. */}
       <div className="section-heading"><h2 id="intake-heading">하루 섭취량</h2></div>
       <div className="intake-grid">
-        {[
-          { key: "calories" as const, label: "칼로리", unit: "kcal" },
-          { key: "carbs" as const, label: "탄수화물", unit: "g" },
-          { key: "protein" as const, label: "단백질", unit: "g" },
-          { key: "fat" as const, label: "지방", unit: "g" },
-        ].map(({ key, label, unit }) => {
+        {nutrientFields.map(({ key, label, unit }) => {
           const goal = target?.[key];
           const rest = remaining?.[key];
           const over = rest !== undefined && rest < 0;
           const percentage = goal && goal > 0 ? Math.min(100, consumed[key] / goal * 100) : 0;
           return (
-            <div className={`intake-metric${over ? " intake-over" : ""}`} key={key}>
+            // 계산 결과 화면과 같은 색을 사용하되 항목 이름과 초과 여부도 함께 표시합니다.
+            <div className={`intake-metric ${key}${over ? " intake-over" : ""}`} key={key}>
               <h3>{label}</h3>
               <p className="intake-consumed"><strong>{display(consumed[key])}</strong><span>{unit} 섭취</span></p>
               <dl>

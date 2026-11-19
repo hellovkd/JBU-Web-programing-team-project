@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { foodUnits, type FoodInput } from "@/lib/mealNutrition";
+import { foodUnits, nutrientFields, type FoodInput } from "@/lib/mealNutrition";
 
 export type FoodFieldValues = {
   name: string;
@@ -75,12 +75,7 @@ export function FoodFields({
           기준량에 해당하는 영양정보를 입력하세요.
         </p>
         <div className="food-nutrient-fields">
-          {[
-            { key: "calories" as const, label: "칼로리", unit: "kcal" },
-            { key: "carbs" as const, label: "탄수화물", unit: "g" },
-            { key: "protein" as const, label: "단백질", unit: "g" },
-            { key: "fat" as const, label: "지방", unit: "g" },
-          ].map((field) => (
+          {nutrientFields.map((field) => (
             <div className="field-group" key={field.key}>
               <label htmlFor={`${idPrefix}-${field.key}`}>{field.label}</label>
               <div className="input-with-unit">
@@ -94,7 +89,6 @@ export function FoodFields({
                   value={fields[field.key]}
                   onChange={(event) => update(field.key, event.target.value)}
                   aria-describedby={`${idPrefix}-nutrition-hint`}
-                  placeholder="0"
                   required
                 />
                 <span>{field.unit}</span>

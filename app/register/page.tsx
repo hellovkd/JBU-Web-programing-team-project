@@ -5,6 +5,7 @@ import { registerAction } from "@/lib/actions";
 import { authenticationConfigured } from "@/lib/config";
 import { SubmitButton } from "@/components/SubmitButton";
 import { BodyFields } from "@/components/BodyFields";
+import { RegisterConversation } from "@/components/RegisterConversation";
 
 type Props = { searchParams: Promise<{ error?: string }> };
 export const metadata = { title: "회원가입" };
@@ -40,8 +41,9 @@ export default async function RegisterPage({ searchParams }: Props) {
           {errors[error]}
         </p>
       ) : null}
-      <form action={registerAction} className="register-grid">
-        <section className="surface-panel registration-account">
+      <form action={registerAction}>
+        {/* 각 단계는 같은 폼에 남겨 이전 답변을 보존하고 한 번에 제출합니다. */}
+        <RegisterConversation account={<section className="surface-panel registration-account">
           <div className="panel-header">
             <h2>계정 정보</h2>
           </div>
@@ -89,8 +91,7 @@ export default async function RegisterPage({ searchParams }: Props) {
               </p>
             </div>
           </div>
-        </section>
-        <section className="surface-panel registration-body">
+        </section>} body={<section className="surface-panel registration-body">
           <div className="panel-header">
             <div>
               <h2>신체 정보와 목표</h2>
@@ -102,7 +103,7 @@ export default async function RegisterPage({ searchParams }: Props) {
           <p className="auth-switch">
             <Link href="/login">로그인</Link>
           </p>
-        </section>
+        </section>} />
       </form>
     </main>
   );

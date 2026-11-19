@@ -6,6 +6,14 @@ export type Nutrients = {
   fat: number;
 };
 
+// 검색, 입력, 섭취량 화면에서 영양소 이름과 단위를 동일하게 표시합니다.
+export const nutrientFields = [
+  { key: "calories", label: "칼로리", unit: "kcal" },
+  { key: "carbs", label: "탄수화물", unit: "g" },
+  { key: "protein", label: "단백질", unit: "g" },
+  { key: "fat", label: "지방", unit: "g" },
+] as const;
+
 export const foodUnits = { g: "g", ml: "mL", piece: "개", serving: "인분" } as const;
 export type FoodInput = {
   name: string;
